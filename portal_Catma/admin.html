@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CATMA SAFE | Panel Administrativo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa !important; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important; }
+        .table thead { background-color: #343a40; color: white; }
+        .badge { padding: 8px 12px; border-radius: 20px; font-weight: 600; }
+        .bg-home { background-color: #e83e8c !important; }
+        .bg-servicios { background-color: #198754 !important; }
+        .bg-cajas { background-color: #0d6efd !important; }
+        .bg-corte { background-color: #ffc107 !important; color: #000 !important; }
+        .bg-bolsa { background-color: #6f42c1 !important; }
+        .scroll-asesores { max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding: 6px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fdfdfd; }
+        .btn-asesor { font-size: 0.70rem !important; font-weight: 600; padding: 4px 8px !important; text-align: left; white-space: nowrap; color: white !important; border: none; border-radius: 5px; transition: opacity 0.2s; }
+        .btn-asesor:hover { opacity: 0.8; }
+        .bg-mujer { background-color: #e83e8c; }
+        .bg-hombre { background-color: #0d6efd; }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-light bg-white shadow-sm px-4 mb-4">
+    <div class="d-flex align-items-center">
+        <img src="/portal_Catma/assets/images/Logo web.png" alt="Logo CATMA" style="height: 40px; margin-right: 15px;">
+        <span class="navbar-brand mb-0 h1">Panel Administrativo</span>
+    </div>
+    <a href="/auth/logout" class="btn btn-outline-danger btn-sm">Cerrar Sesión</a>
+</nav>
+
+<div class="container-fluid">
+    <div class="card shadow p-4 mb-5" id="card-leads">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">Control Comercial - Leads</h4>
+            <div class="d-flex gap-2">
+                <button class="btn btn-success btn-sm" onclick="crearAsesor()">+ Crear Asesor</button>
+                <button class="btn btn-warning btn-sm" onclick="exportarExcel()">Descargar Excel</button>
+                <button class="btn btn-primary btn-sm" onclick="cargarDatos()">Actualizar</button>
+            </div>
+        </div>
+        <table class="table table-hover align-middle" id="tabla-leads">
+            <thead class="table-dark">
+            <tr><th>FECHA</th><th>PROSPECTO</th><th>ORIGEN</th><th>TELÉFONO</th><th>MENSAJE</th><th>ASIGNACIÓN</th><th>ACCIÓN</th></tr>
+            </thead>
+            <tbody id="panel-body"></tbody>
+        </table>
+    </div>
+
+    <div class="card shadow p-4 mb-5" id="card-asesores">
+        <h5>Gestión de Asesores</h5>
+        <table class="table table-hover">
+            <thead><tr><th>NOMBRE</th><th>TELÉFONO</th><th>ACCIÓN</th></tr></thead>
+            <tbody id="asesores-body"></tbody>
+        </table>
+    </div>
+
+    <div class="card shadow p-4 mb-5">
+        <h4 class="mb-4">Bolsa de Trabajo / Candidatos</h4>
+        <table class="table table-hover align-middle">
+            <thead class="table-secondary">
+            <tr><th>FECHA</th><th>CANDIDATO</th><th>PUESTO</th><th>CORREO</th><th>TELÉFONO</th><th>CV</th><th>ACCIÓN</th></tr>
+            </thead>
+            <tbody id="bolsa-body"></tbody>
+        </table>
+    </div>
+
+    <div class="card shadow p-4 mb-5" id="seccion-admin" style="display:none;">
+        <h4 class="mb-4 text-danger">Administración de Usuarios del Sistema</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <form action="/api/usuarios/crear" method="POST">
+                    <input type="text" name="username" class="form-control mb-2" placeholder="Usuario" required>
+                    <input type="password" name="password" class="form-control mb-2" placeholder="Contraseña" required>
+                    <select name="rol" class="form-select mb-2">
+                        <option value="editor">Editor</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                    <button type="submit" class="btn btn-success">Crear Usuario</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form action="/api/usuarios/borrar" method="POST">
+                    <input type="number" name="id" class="form-control mb-2" placeholder="ID del usuario a borrar" required>
+                    <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
+                </form>
+            </div>
+        </div>
+        <table class="table table-hover mt-4">
+            <thead class="table-dark"><tr><th>ID</th><th>USUARIO</th><th>ROL</th></tr></thead>
+            <tbody id="tabla-usuarios-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let globalLeads = [];
+    const configOrigen = { 1: { nombre: 'Home', clase: 'bg-home' }, 2: { nombre: 'Servicios', clase: 'bg-servicios' }, 3: { nombre: 'Cajas', clase: 'bg-cajas' }, 4: { nombre: 'Corte', clase: 'bg-corte' }, 5: { nombre: 'Bolsa', clase: 'bg-bolsa' } };
+    const nombresMujeres = ['Carla', 'Ana', 'Mayra', 'Lizeth', 'Martha', 'Maria', 'Laura'];
+
+    function getColorAsesor(nombre) { const primerNombre = nombre.split(' ')[0]; return nombresMujeres.includes(primerNombre) ? 'bg-mujer' : 'bg-hombre'; }
+
+    async function cargarDatos() {
+        const [leadsRes, asesoresRes, bolsaRes] = await Promise.all([ fetch('/api/ver-leads'), fetch('/api/asesores'), fetch('/api/ver-bolsa') ]);
+        globalLeads = await leadsRes.json();
+        const asesores = await asesoresRes.json();
+        const bolsa = await bolsaRes.json();
+
+        document.getElementById('panel-body').innerHTML = globalLeads.map(l => {
+            const origen = configOrigen[l.id_origen] || { nombre: 'Desconocido', clase: 'bg-secondary' };
+            return `<tr><td>${l.fecha || 'N/A'}</td><td><strong>${l.nombre_cliente}</strong></td><td><span class="badge ${origen.clase}">${origen.nombre}</span></td><td>${l.telefono}</td><td>${l.mensaje || 'Sin mensaje'}</td><td style="width: 180px;"><div class="scroll-asesores">${asesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsApp(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${(l.mensaje||'').replace(/'/g, "\\'")}', '${origen.nombre}', '${a.telefono}', '${a.nombre}')">${a.nombre}</button>`).join('')}</div></td><td><button class="btn btn-danger btn-sm" onclick="borrarLead(${l.id})">Borrar</button></td></tr>`;
+        }).join('');
+
+        document.getElementById('asesores-body').innerHTML = asesores.map(a => `<tr><td>${a.nombre}</td><td>${a.telefono}</td><td><button class="btn btn-danger btn-sm" onclick="borrarAsesor(${a.id})">Borrar</button></td></tr>`).join('');
+        document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `<tr><td>${b.fecha || 'N/A'}</td><td><strong>${b.nombre}</strong></td><td>${b.puesto}</td><td>${b.correo}</td><td>${b.telefono}</td><td>${b.cv_path ? `<a href="/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td><td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td></tr>`).join('');
+    }
+
+    async function asignarWhatsApp(id, tel, nombre, mensaje, origen, asesorTel, asesorNombre) {
+// Guardar la asignación en la base de datos
+        await fetch('/api/asignar-lead', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id_lead: id, nombre_asesor: asesorNombre })
+        });
+// Abrir WhatsApp
+        window.open(`https://wa.me/${asesorTel}?text=${encodeURIComponent(`Hola, asignamos un nuevo lead:\n*Cliente:* ${nombre}\n*Origen:* ${origen}\n*Teléfono:* ${tel}\n*Mensaje:* ${mensaje}`)}`, '_blank');
+// Recargar datos para actualizar la interfaz
+        cargarDatos();
+    }
+
+    function exportarExcel() {
+        const datosExcel = globalLeads.map(l => ({
+            "FECHA": l.fecha || 'N/A',
+            "PROSPECTO": l.nombre_cliente,
+            "ORIGEN": configOrigen[l.id_origen]?.nombre || 'Desconocido',
+            "TELÉFONO": l.telefono,
+            "MENSAJE": l.mensaje || 'Sin mensaje',
+            "ASIGNACIÓN": l.nombre_asesor || 'Sin asignar'
+        }));
+        const ws = XLSX.utils.json_to_sheet(datosExcel);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Leads");
+        XLSX.writeFile(wb, "Reporte_Leads_CATMA.xlsx");
+    }
+
+    // ... (resto de funciones como borrarLead, borrarAsesor, etc. permanecen igual)
+    async function cargarBolsa() {
+        const res = await fetch('/api/ver-bolsa');
+        const bolsa = await res.json();
+        document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `<tr><td>${b.fecha || 'N/A'}</td><td><strong>${b.nombre}</strong></td><td>${b.puesto}</td><td>${b.correo}</td><td>${b.telefono}</td><td>${b.cv_path ? `<a href="/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td><td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td></tr>`).join('');
+    }
+
+    async function initAdmin() {
+        const res = await fetch('/api/usuario/info');
+        const data = await res.json();
+        if (data.rol === 'admin') {
+            document.getElementById('seccion-admin').style.display = 'block';
+            cargarDatos();
+            const resUsers = await fetch('/api/usuarios/lista');
+            const usuarios = await resUsers.json();
+            document.getElementById('tabla-usuarios-body').innerHTML = usuarios.map(u => `<tr><td>${u.id}</td><td>${u.username}</td><td>${u.rol}</td></tr>`).join('');
+        } else {
+            document.getElementById('card-leads').style.display = 'none';
+            document.getElementById('card-asesores').style.display = 'none';
+            cargarBolsa();
+        }
+    }
+
+    async function crearAsesor() { const nombre = prompt("Nombre:"); const telefono = prompt("Teléfono:"); if (nombre && telefono) { await fetch('/api/asesores/crear', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({nombre, telefono})}); cargarDatos(); } }
+    async function borrarAsesor(id) { await fetch(`/api/borrar-asesor/${id}`, {method: 'DELETE'}); cargarDatos(); }
+    async function borrarLead(id) { await fetch(`/api/borrar-lead/${id}`, {method: 'DELETE'}); cargarDatos(); }
+    async function borrarCandidato(id) { await fetch(`/api/borrar-candidato/${id}`, {method: 'DELETE'}); initAdmin(); }
+
+    document.addEventListener('DOMContentLoaded', initAdmin);
+</script>
+</body>
+</html>

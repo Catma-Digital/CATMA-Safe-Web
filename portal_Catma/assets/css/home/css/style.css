@@ -1,0 +1,88 @@
+:root {
+    --red: #E31E24;
+    --dark: #000000;
+    --white: #ffffff;
+    /* Degradado para secciones claras */
+    --grad-light: linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%);
+    /* Degradado para secciones grises */
+    --grad-gray: linear-gradient(180deg, #f4f4f4 0%, #ffffff 100%);
+    --transition: all 0.3s ease-in-out;
+}
+
+/* --- REGLAS BASE --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+
+body { font-family: 'Inter', sans-serif; color: #333; line-height: 1.6; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.section { padding: 80px 0; }
+.text-center { text-align: center; }
+
+/* Cambiamos el color sólido por degradaciones para distinguir secciones */
+.bg-light { background: var(--grad-gray); }
+.section:not(.bg-light) { background: var(--grad-light); }
+
+.card-shadow { box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+
+/* --- NAVBAR --- */
+.navbar { background: white; border-bottom: 4px solid var(--red); position: sticky; top: 0; z-index: 1000; padding: 15px 0; }
+.nav-flex { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.5rem; font-weight: 900; }
+.logo span { color: var(--red); }
+.nav-links { display: flex; list-style: none; gap: 20px; }
+.nav-links a { text-decoration: none; color: #1a1a1a; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
+.btn-job { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: 800; cursor: pointer; }
+
+/* --- CARRUSEL --- */
+.carousel-container { position: relative; height: 60vh; background: #000; overflow: hidden; }
+.carousel-slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 0.8s; display: flex; align-items: center; background-size: cover; background-position: center; color: white; }
+.carousel-slide.active { opacity: 1; z-index: 2; }
+.carousel-slide h1 { font-size: 3rem; font-weight: 900; }
+.accent { border-bottom: 8px solid var(--red); }
+.car-control { position: absolute; top: 50%; z-index: 100; background: rgba(0,0,0,0.5); color: white; border: none; padding: 15px; cursor: pointer; }
+.next { right: 0; }
+
+/* --- NOSOTROS --- */
+.grid-nosotros { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
+.nosotros-card { background: white; padding: 40px 30px; text-align: center; border-top: 4px solid var(--red); height: 100%; }
+.nosotros-card i { font-size: 2rem; color: var(--red); margin-bottom: 15px; }
+
+/* --- UNIDADES (Botones Cuadrados) --- */
+.grid-unidades { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+.unit-card { background: white; padding: 40px 30px; text-align: center; border-bottom: 5px solid transparent; transition: var(--transition); display: flex; flex-direction: column; height: 100%; }
+.unit-icon { font-size: 2.5rem; color: var(--red); margin-bottom: 20px; }
+.unit-card p { flex-grow: 1; margin-bottom: 25px; }
+
+.btn-industrial, .btn-full-dark, .btn-call-action {
+    background: var(--dark); color: white; padding: 12px 25px; border-radius: 4px;
+    font-weight: 800; text-transform: uppercase; border: none; cursor: pointer; transition: var(--transition); text-decoration: none;
+}
+.btn-industrial:hover, .btn-full-dark:hover, .btn-call-action:hover { background: var(--red); transform: translateY(-2px); }
+
+/* --- SEDES OPTIMIZADAS --- */
+.grid-sedes-premium { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; margin-top: 40px; }
+.sede-card-v3 { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; flex: 1; min-width: 320px; max-width: 480px; display: flex; flex-direction: column; }
+.sede-image-box { background: #222; height: 100px; display: flex; align-items: center; justify-content: center; color: var(--red); font-size: 2.5rem; }
+.sede-info { padding: 30px; display: flex; flex-direction: column; flex-grow: 1; }
+.sede-info h4 { font-weight: 900; margin-bottom: 10px; }
+.sede-loc { color: var(--red); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 15px; }
+.sede-desc { font-size: 0.95rem; margin-bottom: 25px; flex-grow: 1; }
+
+/* --- FOOTER SLIM --- */
+.footer-slim { background: #fdfdfd; padding: 25px 0; border-top: 1px solid #eee; color: #888; font-size: 0.85rem; }
+.footer-flex { display: flex; justify-content: space-between; align-items: center; }
+.author-gt-slim { font-weight: 900; color: var(--dark); letter-spacing: 1px; }
+
+/* --- WHATSAPP & MODAL --- */
+.wa-fixed { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 1500; text-decoration: none; }
+.pulse-dark { animation: pulseDark 2s infinite; }
+@keyframes pulseDark { 0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.1); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+
+.modal-overlay { display: none; position: fixed; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; }
+.modal-content { background: white; max-width: 400px; margin: 100px auto; padding: 30px; position: relative; border-radius: 8px; }
+.close-modal { position: absolute; right: 15px; top: 5px; font-size: 24px; cursor: pointer; }
+input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; }

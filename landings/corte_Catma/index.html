@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corte Láser y Maquila | CATMA Safe México</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a href="https://wa.me/525568768387" class="whatsapp-float" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span>COTIZAR POR WHATSAPP</span>
+</a>
+
+<header class="navbar">
+    <div class="container navbar-flex">
+        <img src="/corte/assets/images/logos/Logo%20web.png" alt="CATMA" class="logo">
+        <div class="nav-right">
+            <a href="#contacto" class="btn-nav">SOLICITAR COTIZACIÓN</a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="container">
+            <h1>TECNOLOGÍA DE <span class="text-red">CORTE LÁSER</span></h1>
+            <p>Maquila industrial de alta precisión coordinada desde nuestra Planta Ecatepec.</p>
+        </div>
+    </section>
+
+    <section class="carousel-section">
+        <div class="carousel-wrapper">
+            <div id="carouselContainer" class="carousel-inner"></div>
+            <button class="carousel-nav prev" id="prevBtn"><span></span></button>
+            <button class="carousel-nav next" id="nextBtn"><span></span></button>
+        </div>
+    </section>
+
+    <section class="capabilities-section">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <img src="/corte/assets/images/logos/ISO%20sin%20fondo.png" alt="ISO" style="height: 70px; margin: 0 20px;">
+                <img src="/corte/assets/images/logos/Made_In_Mexico_2025.png" alt="Hecho en México" style="height: 70px; margin: 0 20px;">
+            </div>
+
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h2 style="font-size: 2.5rem; font-weight: 900;">CAPACIDAD TÉCNICA</h2>
+            </div>
+
+            <div class="capabilities-grid">
+                <div class="capability-card">
+                    <i class="fa-solid fa-microchip icon-red"></i>
+                    <h3>CORTE LÁSER CNC</h3>
+                    <p>Tecnología de alta precisión para diversos calibres y materiales industriales.</p>
+                </div>
+                <div class="capability-card">
+                    <i class="fa-solid fa-ruler-combined icon-red"></i>
+                    <h3>DOBLEZ CNC</h3>
+                    <p>Precisión milimétrica en doblez de lámina con equipo de control numérico.</p>
+                </div>
+                <div class="capability-card">
+                    <i class="fa-solid fa-industry icon-red"></i>
+                    <h3>PROYECTOS INTEGRALES</h3>
+                    <p>Desarrollo de estructuras y componentes metálicos a medida para tu empresa.</p>
+                </div>
+            </div>
+
+            <div class="location-row" style="margin-top: 60px;">
+                <div class="location-card">
+                    <i class="fa-solid fa-industry icon-location"></i>
+                    <h3>PLANTA ECATEPEC</h3>
+                    <p>José Ma. Morelos y Pavón 86, Miguel Hidalgo, 55490 Ecatepec de Morelos, Méx.</p>
+                    <a href="tel:5557404596" class="btn-action">LLAMAR A PLANTA</a>
+                </div>
+                <div class="location-card">
+                    <i class="fa-solid fa-location-dot icon-location"></i>
+                    <h3>SUCURSAL CDMX</h3>
+                    <p>C. Allende 21, Centro Histórico de la Cdad. de México, Centro, Cuauhtémoc, 06010 Ciudad de México, CDMX</p>
+                    <a href="tel:5591314773" class="btn-action">LLAMAR A SUCURSAL</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto" class="form-section">
+        <div class="container">
+            <div class="form-container-card">
+                <div class="form-header">
+                    <h2>SOLICITUD DE INGENIERÍA</h2>
+                    <p>Análisis de factibilidad y cotización de proyectos industriales.</p>
+                </div>
+                <form id="leadForm" class="contact-form">
+                    <div class="form-row">
+                        <input type="text" id="nombreLead" placeholder="Empresa / Cliente" class="input-premium" required>
+                        <input type="tel" id="telefonoLead" placeholder="WhatsApp / Teléfono" class="input-premium" required>
+                    </div>
+                    <textarea id="mensajeLead" placeholder="Especificaciones (Material, calibre, cantidad...)" class="input-premium" rows="5" required></textarea>
+                    <button type="submit" class="btn-submit">ENVIAR REQUERIMIENTO <i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-centered">
+        <p>© 2026 CATMA SAFE MÉXICO | DESIGNED BY GO TARGET</p>
+    </div>
+</footer>
+
+<script src="maquila.js"></script>
+</body>
+</html>
