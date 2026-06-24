@@ -35,7 +35,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // --- 2. CONEXIÓN A BASE DE DATOS (AIVEN) ---
-// Busca esta parte en tu index.js y reemplázala por esto:
 const db = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -170,7 +169,7 @@ app.delete('/api/borrar-candidato/:id', async (req, res) => {
 app.delete('/api/borrar-lead/:id', async (req, res) => {
     if (req.session.user?.rol !== 'admin') return res.status(403).json({ error: "No autorizado" });
     try { await db.query("DELETE FROM leads WHERE id = ?", [req.params.id]); res.json({ success: true }); }
-    catch (err) { res.status(500).json({ error: err.mes sage }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/borrar-asesor/:id', async (req, res) => {
@@ -179,12 +178,7 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// CAMBIA ESTO:
-// app.listen(3000, () => ...);
-
-// POR ESTO (para que Render asigne el puerto correctamente):
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor activo en puerto ${PORT}`);
 });
-//app.listen(3000, () => console.log('🚀 Servidor activo y seguro en http://localhost:3000'));
