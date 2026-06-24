@@ -35,14 +35,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // --- 2. CONEXIÓN A BASE DE DATOS (AIVEN) ---
+// Busca esta parte en tu index.js y reemplázala por esto:
 const db = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT,
-    ssl: { rejectUnauthorized: false },
-    connectionLimit: 10
+    ssl: {
+        rejectUnauthorized: false
+    },
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
 // --- 3. ARCHIVOS ESTÁTICOS Y RUTAS ---
@@ -174,4 +179,10 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.listen(3000, () => console.log('🚀 Servidor activo y seguro en http://localhost:3000'));
+// CAMBIA ESTO:
+// app.listen(3000, () => ...);
+
+// POR ESTO (para que Render asigne el puerto correctamente):
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Servidor activo en puerto ${PORT}`));
+//app.listen(3000, () => console.log('🚀 Servidor activo y seguro en http://localhost:3000'));
