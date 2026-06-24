@@ -170,7 +170,7 @@ app.delete('/api/borrar-candidato/:id', async (req, res) => {
 app.delete('/api/borrar-lead/:id', async (req, res) => {
     if (req.session.user?.rol !== 'admin') return res.status(403).json({ error: "No autorizado" });
     try { await db.query("DELETE FROM leads WHERE id = ?", [req.params.id]); res.json({ success: true }); }
-    catch (err) { res.status(500).json({ error: err.message }); }
+    catch (err) { res.status(500).json({ error: err.mes sage }); }
 });
 
 app.delete('/api/borrar-asesor/:id', async (req, res) => {
@@ -184,5 +184,7 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
 
 // POR ESTO (para que Render asigne el puerto correctamente):
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Servidor activo en puerto ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Servidor activo en puerto ${PORT}`);
+});
 //app.listen(3000, () => console.log('🚀 Servidor activo y seguro en http://localhost:3000'));
