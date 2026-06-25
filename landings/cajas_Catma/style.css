@@ -71,17 +71,25 @@ body { font-family: 'Inter', sans-serif; color: var(--deep-black); background-co
     .hero-flex { flex-direction: column; }
     .hero-text-side { padding: 40px 24px; }
 
-    /* CORRECCIÓN: Resetear el flex para que el height fijo sea el que mande */
-    .hero-image-side {
-        flex: none !important;
-        height: 350px !important;
-        width: 100% !important;
-        display: block !important;
-    }
+    @media (max-width: 992px) {
+        .hero-flex { flex-direction: column; }
+        .hero-text-side { padding: 40px 24px; width: 100% !important; }
 
-    .hero-btns { flex-direction: column; }
-    .form-row { grid-template-columns: 1fr; }
-}
+        /* CORRECCIÓN: Asegurar que la imagen no desborde y que el texto no se oculte */
+        .hero-image-side {
+            order: -1; /* Esto pone el carrusel ARRIBA del texto */
+            flex: none !important;
+            height: 300px !important;
+            width: 100% !important;
+            display: block !important;
+            overflow: hidden;
+        }
+
+        .carousel-container { width: 100% !important; }
+
+        .hero-btns { flex-direction: column; }
+        .form-row { grid-template-columns: 1fr; }
+    }
 
 @media (max-width: 768px) {
     .logo { height: 60px; }
