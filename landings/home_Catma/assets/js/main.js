@@ -10,16 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
         leadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Ajustamos los datos para que coincidan con la estructura de Servicios
             const data = {
                 nombre_cliente: document.getElementById('nombreLead').value.trim(),
                 telefono: document.getElementById('telefonoLead').value.trim(),
                 mensaje: document.getElementById('mensajeLead').value.trim(),
-                id_origen: 1 // Usaremos '1' para Home, igual que usas '2' para Servicios
+                id_origen: 1
             };
 
             try {
-                const res = await fetch('http://localhost:3000/api/registro-lead', {
+                // CORREGIDO: Ruta relativa
+                const res = await fetch('/api/registro-lead', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
@@ -33,17 +33,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (err) {
                 console.error('Error LeadForm:', err);
+                alert('Error de conexión.');
             }
         });
     }
 
-    // Lógica Bolsa Form (Optimizada)
+    // Lógica Bolsa Form
     const bolsaForm = document.getElementById('bolsaForm');
     if (bolsaForm) {
         bolsaForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Verificación previa
             const fileInput = document.getElementById('cvBolsa');
             if (!fileInput.files[0]) {
                 alert('Por favor selecciona un archivo PDF.');
@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('cv', fileInput.files[0]);
 
             try {
-                const res = await fetch('http://localhost:3000/api/registro-bolsa', {
+                // CORREGIDO: Ruta relativa
+                const res = await fetch('/api/registro-bolsa', {
                     method: 'POST',
                     body: formData
                 });
@@ -87,12 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let nextSlide = activeSlide.nextElementSibling;
 
-        // Si no hay siguiente slide, regresamos al primero
         if (!nextSlide || !nextSlide.classList.contains('carousel-slide')) {
             nextSlide = slides[0];
         }
 
         activeSlide.classList.remove('active');
         nextSlide.classList.add('active');
-    }, 5000); // Cambia cada 5 segundos
+    }, 5000);
 });
