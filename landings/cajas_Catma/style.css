@@ -76,3 +76,35 @@ body { font-family: 'Inter', sans-serif; color: var(--deep-black); background-co
     .whatsapp-float span { display: none; }
     .form-row { grid-template-columns: 1fr; }
 }
+
+/* AJUSTES ADICIONALES PARA RESPONSIVIDAD TOTAL */
+@media (max-width: 768px) {
+    /* Logo más pequeño en móvil */
+    .logo { height: 60px; }
+
+    /* Hero: Asegurar que el texto sea legible */
+    .hero-text-side { padding: 30px 20px; }
+    .hero-title { font-size: 2rem !important; }
+
+    /* Carousel: Ajustar altura para que no ocupe tanto espacio vertical */
+    .hero-image-side { height: 30vh !important; }
+
+    /* ISO Banner: Apilar elementos en vertical */
+    .iso-flex { flex-direction: column; gap: 15px; padding: 20px; }
+    .iso-badge { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding-right: 0; padding-bottom: 10px; width: 100%; justify-content: center; }
+
+    /* Servicios: Ajustar tarjetas */
+    .service-card { flex: 0 0 280px; padding: 30px; }
+
+    /* Formulario: Espaciado interno */
+    .form-consultoria-container { margin: 40px 10px; padding: 20px; }
+
+    /* Botones: Asegurar ancho total en móviles */
+    .btn-primary, .btn-solutions { width: 100%; text-align: center; }
+}
+
+/* Evitar desbordamiento horizontal global */
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
