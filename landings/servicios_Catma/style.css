@@ -9,12 +9,18 @@
 body { font-family: 'Roboto', sans-serif; background: #fff; color: var(--negro); line-height: 1.6; overflow-x: hidden; }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-/* NAVBAR */
+/* NAVBAR CORREGIDO PARA MÓVIL */
 .navbar { background: #fff; padding: 15px 0; border-bottom: 2px solid var(--negro); position: sticky; top: 0; z-index: 1000; }
-.navbar-flex { display: flex; justify-content: space-between; align-items: center; }
-.logo { height: 100px; }
-.btn-phone { background: var(--rojo); color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; transition: background 0.3s; }
-.btn-phone:hover { background: var(--rojo-hover); }
+.navbar-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+.logo { height: 80px; } /* Reducido ligeramente para dar aire */
+.btn-phone { background: var(--rojo); color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; transition: background 0.3s; white-space: nowrap; }
+
+/* REGLA ESPECIAL PARA MÓVIL */
+@media (max-width: 480px) {
+    .navbar-flex { flex-direction: column; text-align: center; gap: 10px; }
+    .logo { height: 60px; } /* Más pequeño en celular para no amontonar */
+}
 
 /* HERO */
 .hero { position: relative; height: 80vh; display: flex; align-items: center; justify-content: center; color: #fff; text-align: center; }
