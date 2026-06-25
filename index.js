@@ -58,14 +58,23 @@ app.use('/corte', express.static(path.join(__dirname, 'landings', 'corte_Catma')
 app.use('/servicios', express.static(path.join(__dirname, 'landings', 'servicios_Catma')));
 app.use('/descargas', express.static(path.join(__dirname, 'descargas')));
 
+// --- 3. ARCHIVOS ESTÁTICOS Y RUTAS ---
+// ... (tus otras líneas app.use se quedan igual)
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'landings', 'home_Catma', 'index.html')));
 app.get('/cajas', (req, res) => res.sendFile(path.join(__dirname, 'landings', 'cajas_Catma', 'index.html')));
 app.get('/corte', (req, res) => res.sendFile(path.join(__dirname, 'landings', 'corte_Catma', 'index.html')));
 app.get('/servicios', (req, res) => res.sendFile(path.join(__dirname, 'landings', 'servicios_Catma', 'index.html')));
 
+// RUTA PARA ADMIN
 app.get('/admin', (req, res) => {
     if (req.session.user) res.sendFile(path.join(__dirname, 'portal_Catma', 'admin.html'));
     else res.sendFile(path.join(__dirname, 'portal_Catma', 'login.html'));
+});
+
+// RUTA PARA LOGIN (Esta debe estar FUERA de cualquier otra ruta)
+app.get('/auth/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'portal_Catma', 'login.html'));
 });
 
 // --- 4. LÓGICA DE NEGOCIO (APIs y AUTH) ---
