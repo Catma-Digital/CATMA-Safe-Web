@@ -102,3 +102,10 @@ body { font-family: 'Inter', sans-serif; color: var(--deep-black); background-co
     .whatsapp-float { right: 20px; font-size: 24px; }
     .whatsapp-float span { display: none; }
 }
+    @media (max-width: 992px) {
+        body, html {
+            overflow-x: hidden !important;
+            width: 100vw !important;
+            position: relative;
+        }
+    }
