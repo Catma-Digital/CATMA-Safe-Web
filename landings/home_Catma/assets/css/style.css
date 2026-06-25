@@ -71,30 +71,23 @@ body { font-family: 'Inter', sans-serif; color: #333; line-height: 1.6; }
 .footer-slim { background: #fdfdfd; padding: 25px 0; border-top: 1px solid #eee; color: #888; font-size: 0.85rem; }
 .footer-flex { display: flex; justify-content: space-between; align-items: center; }
 @media (max-width: 768px) {
-    /* Navbar: simplificar menú */
-    .nav-links { display: none; } /* Ocultar links si usas un menú móvil, o ajustar gap */
-    .logo img { height: 50px !important; }
-    .navbar { padding: 10px 0; }
+    /* --- CORRECCIÓN DEL MENÚ --- */
+    .navbar { padding: 15px 0; }
+    .nav-flex { flex-direction: column; gap: 15px; }
 
-    /* Carrusel: ajustar altura para no perder espacio vital */
-    .carousel-container { height: 40vh; }
-    .carousel-slide h1 { font-size: 1.8rem !important; padding: 0 15px; }
-
-    /* Secciones: ajustar paddings */
-    .section { padding: 40px 0; }
-
-    /* Grids: forzar una sola columna */
-    .grid-nosotros, .grid-unidades, .grid-sedes-premium {
-        grid-template-columns: 1fr !important;
-        gap: 15px;
+    .nav-links {
+        display: flex !important; /* Forzamos que se muestren */
+        flex-direction: column;   /* Los apilamos verticalmente */
+        text-align: center;
+        gap: 10px;
+        width: 100%;
+        margin-top: 15px;
+        background: #f9f9f9;
+        padding: 15px 0;
     }
 
-    /* Formularios: asegurar que no se desborden */
-    .tech-form, #bolsaForm { width: 95%; }
+    .nav-links a { font-size: 0.9rem; padding: 5px 0; display: block; }
+    .logo img { height: 50px !important; }
 
-    /* Footer: centrar elementos en móvil */
-    .footer-flex { flex-direction: column; gap: 10px; text-align: center; }
-
-    /* WhatsApp: un poco más pequeño para no obstruir botones */
-    .wa-fixed { width: 50px; height: 50px; font-size: 24px; bottom: 20px; right: 20px; }
+    /* ... resto de tus estilos del media query ... */
 }
