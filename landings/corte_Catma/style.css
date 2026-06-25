@@ -102,5 +102,30 @@ body { font-family: 'Inter', sans-serif; color: var(--dark); line-height: 1.6; }
 .footer-centered p { margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--dark); letter-spacing: 1px; }
 
 @media (max-width: 768px) {
-    .capabilities-grid, .location-row, .form-row, .iso-flex, .carousel-grid { grid-template-columns: 1fr; }
+    /* Ajuste de todas las rejillas a una columna */
+    .capabilities-grid, .location-row, .form-row, .iso-flex, .carousel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Hero: texto más pequeño y legible */
+    .hero h1 { font-size: 2.2rem !important; padding: 0 10px; }
+
+    /* Carrusel: altura adecuada para móvil */
+    .carousel-wrapper { height: 300px; }
+    .carousel-caption { bottom: 5%; left: 5%; right: 5%; }
+    .carousel-caption h2 { font-size: 1.4rem; padding-left: 10px; border-left-width: 4px; }
+
+    /* Secciones: menos padding para aprovechar espacio */
+    .capabilities-section, .iso-section, .location-section, .form-section { padding: 40px 0; }
+
+    /* Formulario: simplificar márgenes */
+    .form-container-card { padding: 25px; border-radius: 15px; }
+    .form-row { margin-bottom: 10px; }
+
+    /* Logo y Navbar: ajuste de tamaño */
+    .logo { height: 60px; }
+    .navbar { padding: 10px 0; }
+
+    /* WhatsApp: un poco más compacto */
+    .whatsapp-float { padding: 12px 20px; bottom: 20px; right: 20px; font-size: 0.85rem; }
 }
