@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Esperamos a que los elementos del DOM existan antes de inicializar el carrusel
     const slides = document.querySelectorAll('.carousel-slide');
     let idx = 0;
     if (slides.length > 0) {
@@ -38,8 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // CORRECCIÓN: Usar los IDs correctos (nombreLead, telefonoLead, mensajeLead)
-            // Y el nombre de campo 'nombre_cliente' para que el servidor lo procese bien.
             const data = {
                 nombre_cliente: document.getElementById('nombreLead').value.trim(),
                 telefono: document.getElementById('telefonoLead').value.trim(),
@@ -48,7 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const res = await fetch('http://localhost:3000/api/registro-lead', {
+                // CORRECCIÓN: Ruta relativa sin localhost
+                const res = await fetch('/api/registro-lead', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)

@@ -17,8 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // CORRECCIÓN: Usamos los IDs correctos (nombreLead, telefonoLead, mensajeLead)
-            // Y enviamos 'nombre_cliente' para que el servidor lo acepte sin errores
+            // CORRECCIÓN: Estructura de datos alineada con el servidor
             const datos = {
                 nombre_cliente: document.getElementById('nombreLead').value.trim(),
                 telefono: document.getElementById('telefonoLead').value.trim(),
@@ -27,7 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const respuesta = await fetch('http://localhost:3000/api/registro-lead', {
+                // CORRECCIÓN: Ruta relativa para producción en Render
+                const respuesta = await fetch('/api/registro-lead', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 console.error('Error de conexión:', error);
-                alert("No se pudo conectar con el servidor. Verifica que 'node index.js' esté corriendo.");
+                alert("No se pudo conectar con el servidor.");
             }
         });
     }
