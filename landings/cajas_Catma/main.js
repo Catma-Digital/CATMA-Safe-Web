@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- CARRUSEL ---
     const container = document.getElementById('carousel-dynamic');
+
+    // Lista de imágenes
     const imagenes = [
         'varios/cajas-en-fila.png', 'diamante/CAT-DIAMANTE2245.png',
         'onix/onix cerra.png', 'onix/onix abier.png', 'onix/Porta llaves.jpg',
@@ -16,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
         imagenes.forEach((img, index) => {
             const slide = document.createElement('div');
             slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
-            slide.style.backgroundImage = `url('/assets/images/${img}')`;
+            // RUTA CORREGIDA: usamos ./ para indicar que assets está en la misma carpeta que main.js
+            slide.style.backgroundImage = `url('./assets/images/${img}')`;
             container.appendChild(slide);
         });
     }
@@ -31,12 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000);
     }
 
-    // --- ENVÍO DE FORMULARIO INTEGRADO (ID 3 = CAJAS) ---
+    // --- FORMULARIO ---
     const form = document.getElementById('leadForm');
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const data = {
                 nombre_cliente: document.getElementById('nombreLead').value.trim(),
                 telefono: document.getElementById('telefonoLead').value.trim(),
@@ -45,22 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                // CORRECCIÓN: Ruta relativa sin localhost
                 const res = await fetch('/api/registro-lead', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-
                 if (res.ok) {
                     alert('Solicitud enviada correctamente.');
                     form.reset();
                 } else {
-                    alert('Error en el servidor al procesar los datos.');
+                    alert('Error en el servidor.');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Error de conexión con el servidor.');
+                alert('Error de conexión.');
             }
         });
     }
