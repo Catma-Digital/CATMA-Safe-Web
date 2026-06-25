@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imagenes.forEach((img, index) => {
             const slide = document.createElement('div');
             slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
-            slide.style.backgroundImage = `url('assets/images/${img}')`;
+            slide.style.backgroundImage = `url('/assets/images/${img}')`;
             container.appendChild(slide);
         });
     }
