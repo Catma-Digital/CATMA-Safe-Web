@@ -19,15 +19,38 @@ body { font-family: 'Inter', sans-serif; color: #333; line-height: 1.6; }
 .section:not(.bg-light) { background: var(--grad-light); }
 .card-shadow { box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
 
-/* --- NAVBAR --- */
-.navbar { background: white; border-bottom: 4px solid var(--red); position: sticky; top: 0; z-index: 1000; padding: 15px 0; }
-.nav-flex { display: flex; justify-content: space-between; align-items: center; position: relative; }
-.logo { display: flex; align-items: center; font-size: 0; line-height: 0; }
-.logo img { vertical-align: middle; }
-.nav-links { display: flex; list-style: none; gap: 20px; }
-.nav-links a { text-decoration: none; color: #1a1a1a; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
-.btn-job { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: 800; cursor: pointer; }
-.hamburger { display: none; background: none; border: none; font-size: 30px; cursor: pointer; color: var(--dark); }
+/* --- NAVBAR UNIFICADO --- */
+.navbar { background: white; border-bottom: 4px solid var(--red); position: sticky; top: 0; z-index: 1000; padding: 10px 0; }
+.nav-flex { display: flex; justify-content: space-between; align-items: center; }
+.logo img { height: 130px !important; width: auto; vertical-align: middle; }
+
+/* Menú: Ocultamos hamburguesa en escritorio */
+.hamburger { display: none !important; }
+.nav-links { display: flex; align-items: center; gap: 20px; list-style: none; }
+.nav-links li a { text-decoration: none; color: #1a1a1a; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; white-space: nowrap; }
+
+/* MENÚ Y REDES */
+/* --- MENÚ Y REDES --- */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    list-style: none;
+    margin-left: 60px; /* <--- ESTO ES LO QUE SEPARA EL MENÚ DEL LOGO */
+}
+/* --- REDES SOCIALES (Ajustadas al doble) --- */
+.social-top { display: flex; gap: 20px; align-items: center; margin-right: 20px; }
+.social-top a {
+    font-size: 2.6rem; /* Aumentado al doble: de 1.3rem a 2.6rem */
+    transition: var(--transition);
+    display: inline-block;
+}
+.social-top a:hover { transform: translateY(-3px); }
+
+.fa-facebook { color: #1877f2 !important; }
+.fa-instagram { color: #e4405f !important; }
+.fa-tiktok { color: #000000 !important; }
+.fa-linkedin { color: #0a66c2 !important; }
 
 /* --- CARRUSEL --- */
 .carousel-container { position: relative; height: 60vh; background: #000; overflow: hidden; }
@@ -35,51 +58,198 @@ body { font-family: 'Inter', sans-serif; color: #333; line-height: 1.6; }
 .carousel-slide.active { opacity: 1; z-index: 2; }
 .carousel-slide h1 { font-size: 3rem; font-weight: 900; }
 .accent { border-bottom: 8px solid var(--red); }
-.car-control { position: absolute; top: 50%; z-index: 100; background: rgba(0,0,0,0.5); color: white; border: none; padding: 15px; cursor: pointer; }
-.next { right: 0; }
 
-/* --- SECCIONES Y GRIDS --- */
+/* --- SECCIONES, GRIDS Y PRODUCTOS --- */
+.grid-productos-carrusel { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
+.product-card-v3 { background: var(--white); padding: 25px; text-align: center; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); transition: var(--transition); }
+.carrusel-img-container { position: relative; width: 100%; height: 220px; overflow: hidden; margin: 15px 0; display: flex; align-items: center; justify-content: center; }
+.carrusel-img-container img { max-width: 100%; max-height: 100%; object-fit: contain; display: none; }
+.carrusel-img-container img.active { display: block; }
+.btn-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px 15px; cursor: pointer; font-size: 18px; z-index: 10; }
+.btn-nav.prev { left: 0; }
+.btn-nav.next { right: 0; }
+
+/* --- ELEMENTOS ADICIONALES --- */
 .grid-nosotros { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
 .nosotros-card { background: white; padding: 40px 30px; text-align: center; border-top: 4px solid var(--red); height: 100%; }
-.grid-unidades { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-.unit-card { background: white; padding: 40px 30px; text-align: center; border-bottom: 5px solid transparent; transition: var(--transition); display: flex; flex-direction: column; height: 100%; }
-.unit-icon { font-size: 2.5rem; color: var(--red); margin-bottom: 20px; }
-
-/* --- SEDES --- */
 .grid-sedes-premium { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
 .sede-card-v3 { background: white; padding: 30px; text-align: center; border-bottom: 5px solid var(--red); transition: var(--transition); }
-.sede-card-v3 h4 { margin-bottom: 15px; color: var(--dark); font-size: 1.2rem; }
-.sede-card-v3 p { font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; color: #555; }
-.sede-card-v3 i { color: var(--red); width: 20px; text-align: center; }
-
 .btn-industrial, .btn-full-dark, .btn-call-action, .btn-submit { background: var(--dark); color: white; padding: 12px 25px; border-radius: 4px; font-weight: 800; text-transform: uppercase; border: none; cursor: pointer; transition: var(--transition); text-decoration: none; display: inline-block; }
-.btn-industrial:hover, .btn-full-dark:hover, .btn-call-action:hover, .btn-submit:hover { background: var(--red); transform: translateY(-2px); }
+.btn-industrial:hover { background: var(--red); }
 
-/* --- FORMULARIOS --- */
-.tech-form, #bolsaForm { width: 100%; max-width: 500px; margin: 0 auto; }
-.tech-form input, .tech-form textarea,
-#bolsaForm input, #bolsaForm textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; display: block; }
-
-/* --- MODAL --- */
+/* --- MODAL Y FOOTER --- */
 .modal-overlay { display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; justify-content: center; align-items: center; }
 .modal-overlay.active { display: flex !important; }
-.modal-content { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 8px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
-.close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
+.modal-content { background: white !important; padding: 40px; border-radius: 8px; width: 90%; max-width: 500px; color: #333 !important; text-align: left; position: relative; }
+.modal-content input, .modal-content textarea { width: 100%; margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; background: white !important; color: #333 !important; }
+.close-modal { position: absolute; top: 10px; right: 15px; font-size: 25px; cursor: pointer; }
+.footer-slim { background: #fdfdfd; padding: 25px 0; border-top: 1px solid #eee; text-align: center; color: #888; font-size: 0.85rem; }
 
-/* --- FOOTER Y WHATSAPP --- */
-.wa-fixed { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 1500; text-decoration: none; }
-.footer-slim { background: #fdfdfd; padding: 25px 0; border-top: 1px solid #eee; color: #888; font-size: 0.85rem; }
-.footer-flex { display: flex; justify-content: space-between; align-items: center; }
+/* --- FORMULARIOS --- */
+#leadForm { width: 100%; max-width: 500px; margin: 40px auto; display: block; }
+#leadForm input, #leadForm textarea { width: 100%; margin-bottom: 10px; padding: 12px; border: 1px solid #ddd; border-radius: 4px; }
 
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
     .hamburger { display: block; }
-    .nav-links {
-        display: none; flex-direction: column; position: absolute; top: 100%; left: 0;
-        width: 100%; background: white; padding: 20px; box-shadow: 0 10px 10px rgba(0,0,0,0.1);
-        text-align: center; gap: 15px;
-    }
+    .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: white; padding: 20px; box-shadow: 0 10px 10px rgba(0,0,0,0.1); }
     .nav-links.active { display: flex !important; }
-    .carousel-container { height: 40vh; }
-    .carousel-slide h1 { font-size: 1.5rem !important; }
+}
+
+/* Estilo Botón Bolsa de Trabajo */
+.btn-job {
+    background-color: var(--red) !important;
+    color: white !important;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-job:hover {
+    background-color: var(--dark) !important;
+}
+.social-top a i {
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+}
+.nosotros-card p {
+    margin-top: 15px;
+    font-size: 0.95rem;
+    color: #555;
+    text-align: justify; /* Esto ayuda a que el párrafo largo se vea más profesional */
+}
+.nosotros-card h4 {
+    margin-bottom: 10px;
+    color: var(--red);
+}
+
+/* Solo cambia el color de texto a negro para los títulos */
+.nosotros-card h4 {
+    color: #000000 !important;
+}
+/* Forzar fondo blanco en las imágenes del carrusel para eliminar el gris */
+.carrusel-img-container {
+    background-color: #ffffff !important; /* Fondo blanco sólido */
+}
+
+/* Asegurar que las imágenes no tengan colores heredados */
+.carrusel-img-container img {
+    background-color: transparent !important;
+    object-fit: contain;
+}
+
+.carrusel-servicio-full {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+}
+.carrusel-servicio-full img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+.carrusel-servicio-full img.active { opacity: 1; }
+
+/* --- AJUSTE DEFINITIVO PARA QUE LAS CAJAS SE VEAN COMPLETAS --- */
+.slide-cajas {
+    background-size: contain !important; /* Muestra la imagen completa sin cortar nada */
+    background-position: 80% center !important; /* Mantiene las cajas a la derecha */
+    background-repeat: no-repeat !important; /* Evita que la imagen se repita */
+}
+/* --- NUEVA ESTRUCTURA PARA LAS CAJAS --- */
+.carousel-slide {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+}
+
+.cajas-img {
+    max-width: 45%;
+    height: auto;
+}
+
+.text-side {
+    width: 45%;
+}
+
+/* 1. Fondo limpio para el carrusel */
+.carousel-slide {
+    background-color: #ffffff !important; /* Cambia negro por blanco */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+}
+
+/* 2. Resaltar la imagen de las cajas */
+.cajas-img {
+    max-width: 45%;
+    height: auto;
+    filter: brightness(1.1) contrast(1.1); /* Esto hace que las cajas se vean más brillantes y definidas */
+    drop-shadow: 0 10px 15px rgba(0,0,0,0.1); /* Añade una sombra suave para que "floten" */
+}
+
+/* 3. Asegurar que el texto sea legible sobre fondo blanco */
+.text-side h1 {
+    color: #333333 !important; /* Texto oscuro para que resalte en blanco */
+}
+.text-side p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-top: 15px;
+    max-width: 400px; /* Esto limita el ancho del texto para que no se vea estirado */
+}
+/* Asegurar que el texto sea visible y tenga espacio */
+.slide-cajas .text-side p {
+    color: #333333 !important; /* Texto gris oscuro */
+    font-size: 1.2rem !important;
+    line-height: 1.5 !important;
+    margin-top: 20px !important;
+    display: block !important; /* Fuerza a que el párrafo sea visible */
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+/* Quitar el fondo gris y el recuadro de las flechas */
+.btn-nav {
+    background-color: transparent !important; /* Elimina el fondo gris */
+    border: none !important;                /* Elimina el borde */
+    color: #555 !important;                /* Color de la flecha (puedes cambiarlo a negro #000) */
+    font-size: 24px !important;            /* Ajusta el tamaño si lo necesitas */
+    cursor: pointer;
+    padding: 10px;
+    transition: color 0.3s ease;           /* Un pequeño efecto suave al pasar el mouse */
+}
+
+/* Opcional: Hacer que cambien de color al pasar el mouse sobre ellas */
+.btn-nav:hover {
+    color: #ff0000 !important;             /* Cambia el color al pasar el mouse (ej. rojo CATMA) */
+}
+
+/* Hacer las flechas más delgadas y estilizadas */
+.btn-nav {
+    background: transparent !important;
+    border: none !important;
+    font-weight: 200 !important; /* Reduce el grosor de la fuente */
+    opacity: 0.6 !important;     /* Las hace ver más sutiles/delgadas */
+    font-size: 20px !important;  /* Un poco más pequeñas para que se vean finas */
+    transition: opacity 0.3s ease !important;
+}
+
+/* Efecto al pasar el cursor */
+.btn-nav:hover {
+    opacity: 1 !important;
+    color: #333 !important;
 }
