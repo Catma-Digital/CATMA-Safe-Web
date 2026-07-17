@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!nextSlide || !nextSlide.classList.contains('carousel-slide')) { nextSlide = slides[0]; }
         activeSlide.classList.remove('active');
         nextSlide.classList.add('active');
-    }, 5000);
+    }, 10000);
 
     // 6. Lógica Carruseles de Productos (NUEVA)
     document.querySelectorAll('.product-card-v3').forEach(card => {
@@ -103,5 +103,5 @@ document.addEventListener('DOMContentLoaded', () => {
         imagenes[indice].classList.remove('active');
         indice = (indice + 1) % imagenes.length;
         imagenes[indice].classList.add('active');
-    }, 4000);
+    }, 5000);
 });
