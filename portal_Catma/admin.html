@@ -111,13 +111,18 @@
 
         document.getElementById('panel-body').innerHTML = globalLeads.map(l => {
             const origen = configOrigen[l.id_origen] || { nombre: 'Desconocido', clase: 'bg-secondary' };
-            return `<tr><td>${l.fecha || 'N/A'}</td><td><strong>${l.nombre_cliente}</strong></td><td><span class="badge ${origen.clase}">${origen.nombre}</span></td><td>${l.telefono}</td><td>${l.mensaje || 'Sin mensaje'}</td><td style="width: 180px;"><div class="scroll-asesores">${asesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsApp(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${(l.mensaje||'').replace(/'/g, "\\'")}', '${origen.nombre}', '${a.telefono}', '${a.nombre}')">${a.nombre}</button>`).join('')}</div></td><td><button class="btn btn-danger btn-sm" onclick="borrarLead(${l.id})">Borrar</button></td></tr>`;
+
+            // Limpiamos comillas y saltos de línea del mensaje para evitar romper el script
+            const mensajeLimpio = (l.mensaje || 'Sin mensaje')
+                .replace(/'/g, "\\'")
+                .replace(/[\r\n]+/g, ' ');
+
+            return `<tr><td>${l.fecha || 'N/A'}</td><td><strong>${l.nombre_cliente}</strong></td><td><span class="badge ${origen.clase}">${origen.nombre}</span></td><td>${l.telefono}</td><td>${l.mensaje || 'Sin mensaje'}</td><td style="width: 180px;"><div class="scroll-asesores">${asesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsApp(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${mensajeLimpio}', '${origen.nombre}', '${a.telefono}', '${a.nombre}')">${a.nombre}</button>`).join('')}</div></td><td><button class="btn btn-danger btn-sm" onclick="borrarLead(${l.id})">Borrar</button></td></tr>`;
         }).join('');
 
         document.getElementById('asesores-body').innerHTML = asesores.map(a => `<tr><td>${a.nombre}</td><td>${a.telefono}</td><td><button class="btn btn-danger btn-sm" onclick="borrarAsesor(${a.id})">Borrar</button></td></tr>`).join('');
         document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `<tr><td>${b.fecha || 'N/A'}</td><td><strong>${b.nombre}</strong></td><td>${b.puesto}</td><td>${b.correo}</td><td>${b.telefono}</td><td>${b.cv_path ? `<a href="/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td><td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td></tr>`).join('');
     }
-
     async function asignarWhatsApp(id, tel, nombre, mensaje, origen, asesorTel, asesorNombre) {
 // Guardar la asignación en la base de datos
         await fetch('/api/asignar-lead', {
