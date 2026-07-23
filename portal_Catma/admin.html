@@ -116,28 +116,32 @@
             const clienteLimpio = (l.nombre_cliente || '').replace(/"/g, '&quot;').replace(/'/g, "\\'");
             const mensajeLimpio = (l.mensaje || 'Sin mensaje').replace(/"/g, '&quot;').replace(/'/g, "\\'").replace(/[\r\n]+/g, ' ');
 
-            // 2. Usamos las variables limpias dentro del onclick del botón
-            return `<tr><td>${l.fecha || 'N/A'}</td><td><strong>${l.nombre_cliente}</strong></td><td><span class="badge ${origen.clase}">${origen.nombre}</span></td><td>${l.telefono}</td><td>${l.mensaje || 'Sin mensaje'}</td><td style="width: 180px;"><div class="scroll-asesores">${asesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsApp(${l.id}, '${l.telefono}', '${clienteLimpio}', '${mensajeLimpio}', '${origen.nombre}', '${a.telefono}', '${a.nombre}')">${a.nombre}</button>`).join('')}</div></td><td><button class="btn btn-danger btn-sm" onclick="borrarLead(${l.id})">Borrar</button></td></tr>`;
+            // 2. Formateamos la fecha a la hora local de México
+            const fechaLocal = l.fecha ? new Date(l.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A';
+
+            // 3. Usamos fechaLocal y las variables limpias dentro de la fila
+            return `<tr><td>${fechaLocal}</td><td><strong>${l.nombre_cliente}</strong></td><td><span class="badge ${origen.clase}">${origen.nombre}</span></td><td>${l.telefono}</td><td>${l.mensaje || 'Sin mensaje'}</td><td style="width: 180px;"><div class="scroll-asesores">${asesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsApp(${l.id}, '${l.telefono}', '${clienteLimpio}', '${mensajeLimpio}', '${origen.nombre}', '${a.telefono}', '${a.nombre}')">${a.nombre}</button>`).join('')}</div></td><td><button class="btn btn-danger btn-sm" onclick="borrarLead(${l.id})">Borrar</button></td></tr>`;
         }).join('');
+
         document.getElementById('asesores-body').innerHTML = asesores.map(a => `<tr><td>${a.nombre}</td><td>${a.telefono}</td><td><button class="btn btn-danger btn-sm" onclick="borrarAsesor(${a.id})">Borrar</button></td></tr>`).join('');
         document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `<tr><td>${b.fecha || 'N/A'}</td><td><strong>${b.nombre}</strong></td><td>${b.puesto}</td><td>${b.correo}</td><td>${b.telefono}</td><td>${b.cv_path ? `<a href="/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td><td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td></tr>`).join('');
     }
     async function asignarWhatsApp(id, tel, nombre, mensaje, origen, asesorTel, asesorNombre) {
-// Guardar la asignación en la base de datos
+        // Guardar la asignación en la base de datos
         await fetch('/api/asignar-lead', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ id_lead: id, nombre_asesor: asesorNombre })
         });
-// Abrir WhatsApp
+        // Abrir WhatsApp
         window.open(`https://wa.me/${asesorTel}?text=${encodeURIComponent(`Hola, asignamos un nuevo lead:\n*Cliente:* ${nombre}\n*Origen:* ${origen}\n*Teléfono:* ${tel}\n*Mensaje:* ${mensaje}`)}`, '_blank');
-// Recargar datos para actualizar la interfaz
+        // Recargar datos para actualizar la interfaz
         cargarDatos();
     }
 
     function exportarExcel() {
         const datosExcel = globalLeads.map(l => ({
-            "FECHA": l.fecha || 'N/A',
+            "FECHA": l.fecha ? new Date(l.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A',
             "PROSPECTO": l.nombre_cliente,
             "ORIGEN": configOrigen[l.id_origen]?.nombre || 'Desconocido',
             "TELÉFONO": l.telefono,
@@ -150,12 +154,10 @@
         XLSX.writeFile(wb, "Reporte_Leads_CATMA.xlsx");
     }
 
-    // ... (resto de funciones como borrarLead, borrarAsesor, etc. permanecen igual)
     async function cargarBolsa() {
         const res = await fetch('/api/ver-bolsa');
         const bolsa = await res.json();
-        document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `<tr>// Usa esta función para formatear la fecha/hora localmente
-<td>${l.fecha ? new Date(l.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A'}</td><strong>${b.nombre}</strong></td><td>${b.puesto}</td><td>${b.correo}</td><td>${b.telefono}</td><td>${b.cv_path ? `<a href="/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td><td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td></tr>`).join('');
+        document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `<tr><td>${b.fecha || 'N/A'}</td><td><strong>${b.nombre}</strong></td><td>${b.puesto}</td><td>${b.correo}</td><td>${b.telefono}</td><td>${b.cv_path ? `<a href="/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td><td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td></tr>`).join('');
     }
 
     async function initAdmin() {
