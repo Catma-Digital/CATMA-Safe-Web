@@ -154,7 +154,8 @@
     async function cargarBolsa() {
         const res = await fetch('/api/ver-bolsa');
         const bolsa = await res.json();
-        document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `<tr><td>${b.fecha || 'N/A'}</td><td><strong>${b.nombre}</strong></td><td>${b.puesto}</td><td>${b.correo}</td><td>${b.telefono}</td><td>${b.cv_path ? `<a href="/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td><td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td></tr>`).join('');
+        document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `<tr>// Usa esta función para formatear la fecha/hora localmente
+<td>${l.fecha ? new Date(l.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A'}</td><strong>${b.nombre}</strong></td><td>${b.puesto}</td><td>${b.correo}</td><td>${b.telefono}</td><td>${b.cv_path ? `<a href="/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td><td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td></tr>`).join('');
     }
 
     async function initAdmin() {
