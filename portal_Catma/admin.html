@@ -346,8 +346,8 @@
 
                 const botonesAsesores = globalAsesores.map(a =>
                     `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}"
-                             onclick="asignarWhatsAppLanding(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${origen.nombre}', '${a.telefono}', '${a.nombre}')">
-                             ${a.nombre}
+                            onclick="asignarWhatsAppLanding(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${origen.nombre}', '${a.telefono}', '${a.nombre}')">
+                            ${a.nombre}
                      </button>`
                 ).join('');
 
@@ -379,7 +379,7 @@
 
             if (data.success) {
                 alert(`¡Lote de ${data.count} prospectos procesado y guardado con éxito por los agentes!`);
-                cargarDatos(); // Recarga los datos de la base de datos para pintar los nuevos registros
+                cargarDatos();
             } else {
                 alert("Hubo un error al procesar el lote con los agentes.");
             }
