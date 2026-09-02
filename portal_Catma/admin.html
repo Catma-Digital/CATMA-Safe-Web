@@ -253,7 +253,10 @@
         2: { nombre: 'Servicios', clase: 'bg-servicios' },
         3: { nombre: 'Cajas', clase: 'bg-cajas' },
         4: { nombre: 'Corte', clase: 'bg-corte' },
-        5: { nombre: 'Bolsa', clase: 'bg-bolsa' }
+        5: { nombre: 'Bolsa', clase: 'bg-bolsa' },
+        99: { nombre: 'Apollo.io', clase: 'bg-primary' },
+        98: { nombre: 'LinkedIn Web', clase: 'bg-info text-dark' },
+        97: { nombre: 'Google Search', clase: 'bg-warning text-dark' }
     };
     const nombresMujeres = ['Carla', 'Ana', 'Mayra', 'Lizeth', 'Martha', 'Maria', 'Laura'];
 
@@ -314,6 +317,7 @@
             tbodyIA.innerHTML = globalLeadsIA.map(l => {
                 const fechaLocal = l.fecha ? new Date(l.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A';
                 const textoDetalles = l.mensaje || 'Sin detalles adicionales';
+                const origen = configOrigen[l.id_origen] || { nombre: l.id_origen || 'IA Apollo', clase: 'bg-secondary' };
 
                 const asignacionContenido = l.nombre_asesor
                     ? `<div class="mb-1"><span class="badge bg-info text-dark">${l.nombre_asesor}</span></div><div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles}\`)">${a.nombre}</button>`).join('')}</div>`
@@ -324,8 +328,8 @@
                 return `<tr>
                     <td>${fechaLocal}</td>
                     <td><strong>${l.nombre_cliente || 'Sin nombre'}</strong></td>
-                    <td><span class="badge bg-secondary">${l.id_origen || 'IA Apollo'}</span></td>
-                    <td>${l.telefono || 'Consultar en Apollo'}</td>
+                    <td><span class="badge ${origen.clase}">${origen.nombre}</span></td>
+                    <td>${l.telefono || 'Consultar'}</td>
                     <td>${textoDetalles}</td>
                     <td style="width: 220px;">${asignacionContenido}</td>
                     <td><button class="btn btn-danger btn-sm" onclick="borrarLeadIA(${l.id})">Borrar</button></td>
