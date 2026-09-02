@@ -14,46 +14,37 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
         let guardadosNuevos = 0;
 
         for (const lead of leadsProcesados) {
-            // Evitamos duplicados basándonos en el nombre y empresa
             const [existentes] = await connection.execute(
                 'SELECT id FROM leads WHERE nombre_cliente = ? AND mensaje LIKE ?',
                 [lead.nombre, `%${lead.empresa}%`]
             );
 
-            if (existentes.length > 0) {
-                continue;
-            }
+            if (existentes.length > 0) continue;
 
             const query = `
                 INSERT INTO leads (nombre_cliente, telefono, mensaje, id_origen) 
                 VALUES (?, ?, ?, ?)
             `;
 
-            const mensajeCalificacion = `[Calificación: ${lead.calificacion || 'Alta'}] Empresa: ${lead.empresa} | Cargo: ${lead.cargo} | Análisis: ${lead.resumen || lead.interes_inicial}`;
+            const mensajeCalificacion = `[Calificación: ${lead.calificacion}] Empresa: ${lead.empresa} | ${lead.resumen}`;
 
             const values = [
                 lead.nombre,
-                lead.telefono || 'Consultar en Apollo',
+                lead.telefono,
                 mensajeCalificacion,
-                'Apollo.io' // Esto garantiza matemáticamente que el index.js los mande arriba
+                lead.origen || 'Apollo.io' // Garantiza que sea texto y suba a la tabla superior
             ];
 
             await connection.execute(query, values);
             guardadosNuevos++;
         }
-
-        return { success: true, message: `Se generaron ${guardadosNuevos} prospectos nuevos` };
-
+        return { success: true, message: `Guardados ${guardadosNuevos} leads` };
     } catch (error) {
-        console.error("Error al guardar en la base de datos:", error);
+        console.error("Error al guardar:", error);
         throw error;
     } finally {
-        if (connection) {
-            await connection.end();
-        }
+        if (connection) await connection.end();
     }
 }
 
-module.exports = {
-    guardarLeadsEnBaseDeDatos
-};
+module.exports = { guardarLeadsEnBaseDeDatos };
