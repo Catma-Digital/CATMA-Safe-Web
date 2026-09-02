@@ -3,17 +3,10 @@ const axios = require('axios');
 async function obtenerProspectosCrudos() {
     try {
         const apiKey = process.env.APOLLO_API_KEY;
-        if (!apiKey) {
-            throw new Error("Falta la API Key de Apollo en las variables de entorno.");
-        }
+        if (!apiKey) throw new Error("Falta la API Key de Apollo");
 
         const response = await axios.post('https://api.apollo.io/api/v1/mixed_people/api_search', {
-            person_titles: [
-                "Gerente de Adquisiciones",
-                "Gerente de Compras",
-                "Director de Operaciones",
-                "Director de Seguridad Física"
-            ],
+            person_titles: ["Gerente de Adquisiciones", "Gerente de Compras", "Director de Operaciones"],
             organization_locations: ["Mexico"],
             page: 1,
             per_page: 7
@@ -26,43 +19,33 @@ async function obtenerProspectosCrudos() {
         });
 
         const personas = response.data.people || [];
-        if (personas.length === 0) {
-            return [];
-        }
+        if (personas.length === 0) return [];
 
         return personas.map(p => {
-            const nombreLimpio = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Prospecto Corporativo';
+            const nombreLimpio = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Prospecto IA';
 
-            // Extracción real y robusta del teléfono desde la estructura de Apollo
+            // Extraer teléfono real de Apollo de forma segura
             let telefonoReal = '';
             if (p.phone_numbers && p.phone_numbers.length > 0) {
                 telefonoReal = p.phone_numbers[0].sanitized_number || p.phone_numbers[0].raw_number || '';
             } else if (p.corporate_phone) {
                 telefonoReal = p.corporate_phone;
-            } else if (p.ext) {
-                telefonoReal = p.ext;
             }
-
-            // Si Apollo no expone el teléfono directo en el nodo, usamos el correo corporativo o indicamos el registro real de empresa
-            const contactoFinal = telefonoReal || p.email || `Empresa: ${p.organization?.name || 'Ver en Apollo'}`;
 
             return {
                 nombre: nombreLimpio,
                 empresa: p.organization?.name || 'Empresa Privada',
                 cargo: p.title || 'Directivo',
-                origen: 'Apollo.io',
-                telefono: contactoFinal,
+                origen_id: 99, // ID numérico exclusivo para IA (evita conflictos con landings 1-5)
+                telefono: telefonoReal || 'No disponible (Ver Apollo)',
                 calificacion: 'Alta',
-                resumen: `Cargo: ${p.title || 'Directivo'} | Email: ${p.email || 'No listado'} | Análisis: Interés detectado en sistemas de seguridad y blindaje.`
+                resumen: `Cargo: ${p.title || 'Directivo'} | Email: ${p.email || 'No listado'} | Análisis: Interés detectado en sistemas de seguridad y cajas fuertes.`
             };
         });
-
     } catch (error) {
-        console.error("Error al conectar con Apollo API:", error.response?.data || error.message);
+        console.error("Error en Apollo API:", error.response?.data || error.message);
         throw error;
     }
 }
 
-module.exports = {
-    obtenerProspectosCrudos
-};
+module.exports = { obtenerProspectosCrudos };

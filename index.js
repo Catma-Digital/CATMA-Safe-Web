@@ -133,12 +133,12 @@ app.post('/api/usuarios/borrar', async (req, res) => {
 
 // --- 6. APIs DE NEGOCIO (LEADS, ASESORES, BOLSA) ---
 
-// Obtener leads normales (Exclusivo para Landings: IDs estrictamente numéricos o nulos)
+// Obtener leads normales de Landings (Inferior): Excluye estrictamente el identificador 99 de IA
 app.get('/api/leads', async (req, res) => {
     try {
         const [rows] = await db.query(`
             SELECT * FROM leads 
-            WHERE id_origen REGEXP '^[0-9]+$' 
+            WHERE id_origen != 99 
             OR id_origen IS NULL 
             ORDER BY id DESC
         `);
@@ -152,7 +152,7 @@ app.get('/api/ver-leads', async (req, res) => {
     try {
         const [rows] = await db.query(`
             SELECT * FROM leads 
-            WHERE id_origen REGEXP '^[0-9]+$' 
+            WHERE id_origen != 99 
             OR id_origen IS NULL 
             ORDER BY id DESC
         `);
@@ -167,8 +167,7 @@ app.get('/api/leads-ia', async (req, res) => {
     try {
         const [rows] = await db.query(`
             SELECT * FROM leads 
-            WHERE (id_origen NOT REGEXP '^[0-9]+$' AND id_origen IS NOT NULL AND id_origen != '')
-            OR id_origen = 'Apollo.io'
+            WHERE id_origen = 99 
             ORDER BY id DESC
         `);
         res.json(rows);
@@ -181,8 +180,7 @@ app.delete('/api/borrar-todos-ia', async (req, res) => {
     try {
         await db.query(`
             DELETE FROM leads 
-            WHERE (id_origen NOT REGEXP '^[0-9]+$' AND id_origen IS NOT NULL AND id_origen != '')
-            OR id_origen = 'Apollo.io'
+            WHERE id_origen = 99
         `);
         res.json({ success: true });
     } catch (err) {
@@ -195,8 +193,7 @@ app.post('/api/asignar-todos-ia', async (req, res) => {
         const { nombre_asesor } = req.body;
         await db.query(`
             UPDATE leads SET nombre_asesor = ? 
-            WHERE (id_origen NOT REGEXP '^[0-9]+$' AND id_origen IS NOT NULL AND id_origen != '')
-            OR id_origen = 'Apollo.io'
+            WHERE id_origen = 99
         `, [nombre_asesor]);
         res.json({ success: true });
     } catch (err) {
