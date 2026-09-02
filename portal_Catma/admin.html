@@ -317,23 +317,35 @@
             tbodyIA.innerHTML = globalLeadsIA.map(l => {
                 const fechaLocal = l.fecha ? new Date(l.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A';
 
-                let textoDetalles = l.mensaje || 'Sin detalles adicionales';
+                let textoDetalles = l.mensaje || '';
 
-                // Asegurar que si hay una URL de Apollo o LinkedIn en texto plano, se muestre completa y copiable
-                if (!textoDetalles.includes('https://') && l.apollo_url) {
-                    textoDetalles += ` | Apollo: ${l.apollo_url}`;
+                // Extraer el nombre de la empresa del mensaje (ej. "Empresa: Bimbo México | undefined")
+                let nombreEmpresa = "Empresa";
+                const matchEmpresa = textoDetalles.match(/Empresa:\s*([^|]+)/);
+                if (matchEmpresa && matchEmpresa[1]) {
+                    nombreEmpresa = matchEmpresa[1].trim();
                 }
 
-                // Renderiza la URL completa como texto plano y además le coloca un botón/enlace al lado para abrir directo
-                textoDetalles = textoDetalles.replace(
-                    /(https:\/\/app\.apollo\.io\/[^\s]+)/g,
-                    '$1 | <a href="$1" target="_blank" class="text-primary fw-bold text-decoration-underline">Abrir en Apollo</a>'
-                );
+                // Generar URL de texto plano según el origen o tipo de lead
+                let urlGenerada = "";
+                let textoEnlace = "";
 
-                textoDetalles = textoDetalles.replace(
-                    /(https:\/\/www\.linkedin\.com\/[^\s]+)/g,
-                    '$1 | <a href="$1" target="_blank" class="text-primary fw-bold text-decoration-underline">Abrir en LinkedIn</a>'
-                );
+                if (textoDetalles.includes('Apollo') || l.id_origen === 99) {
+                    urlGenerada = `https://app.apollo.io/#/people?qKeywords=${encodeURIComponent(nombreEmpresa)}`;
+                    textoEnlace = "Abrir en Apollo";
+                } else if (textoDetalles.includes('LinkedIn') || l.id_origen === 98) {
+                    urlGenerada = `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(nombreEmpresa)}`;
+                    textoEnlace = "Buscar en LinkedIn";
+                } else {
+                    urlGenerada = `https://www.google.com/search?q=${encodeURIComponent(nombreEmpresa + ' contacto Mexico')}`;
+                    textoEnlace = "Buscar en Google";
+                }
+
+                // Limpiar el texto "undefined" feo si viene del backend
+                textoDetalles = textoDetalles.replace(/\|\s*undefined/g, '');
+
+                // Construir la salida limpia: Texto plano de la liga + Hipervínculo para hacer clic
+                let contenidoFinal = `${textoDetalles} | <strong>${urlGenerada}</strong> | <a href="${urlGenerada}" target="_blank" class="text-primary fw-bold text-decoration-underline">${textoEnlace}</a>`;
 
                 // Mapeo flexible de etiquetas según el origen real
                 let claseOrigen = 'bg-secondary';
@@ -343,9 +355,9 @@
                 else if (nombreOrigen === 'Google Search' || l.id_origen === 97 || textoDetalles.includes('Google')) { claseOrigen = 'bg-warning text-dark'; nombreOrigen = 'Google Search'; }
 
                 const asignacionContenido = l.nombre_asesor
-                    ? `<div class="mb-1"><span class="badge bg-info text-dark">${l.nombre_asesor}</span></div><div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles.replace(/<[^>]*>?/gm, '')}\`)">${a.nombre}</button>`).join('')}</div>`
+                    ? `<div class="mb-1"><span class="badge bg-info text-dark">${l.nombre_asesor}</span></div><div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${contenidoFinal.replace(/<[^>]*>?/gm, '')}\`)">${a.nombre}</button>`).join('')}</div>`
                     : (globalAsesores && globalAsesores.length > 0
-                        ? `<div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles.replace(/<[^>]*>?/gm, '')}\`)">${a.nombre}</button>`).join('')}</div>`
+                        ? `<div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${contenidoFinal.replace(/<[^>]*>?/gm, '')}\`)">${a.nombre}</button>`).join('')}</div>`
                         : `<span class="text-muted small">Cargando asesores...</span>`);
 
                 return `<tr>
@@ -353,7 +365,7 @@
                     <td><strong>${l.nombre_cliente || 'Sin nombre'}</strong></td>
                     <td><span class="badge ${claseOrigen}">${nombreOrigen}</span></td>
                     <td>${l.telefono || 'Consultar'}</td>
-                    <td style="font-size: 0.9rem; word-break: break-all;">${textoDetalles}</td>
+                    <td style="font-size: 0.85rem; word-break: break-all;">${contenidoFinal}</td>
                     <td style="width: 220px;">${asignacionContenido}</td>
                     <td><button class="btn btn-danger btn-sm" onclick="borrarLeadIA(${l.id})">Borrar</button></td>
                 </tr>`;
