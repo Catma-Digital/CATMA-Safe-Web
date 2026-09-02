@@ -15,38 +15,41 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
         let guardadosNuevos = 0;
 
         for (const lead of leadsProcesados) {
-            // 1. Verificamos si ya existe un lead con el mismo nombre y empresa para evitar duplicados exactos
+            // Evita duplicados verificando si ya existe el nombre y la empresa
             const [existentes] = await connection.execute(
-                'SELECT id FROM leads WHERE nombre_cliente = ? AND id_origen = ?',
-                [lead.nombre, lead.origen]
+                'SELECT id FROM leads WHERE nombre_cliente = ? AND mensaje LIKE ?',
+                [lead.nombre, `%${lead.empresa}%`]
             );
 
             if (existentes.length > 0) {
                 console.log(`Lead duplicado omitido: ${lead.nombre}`);
-                continue; // Salta este registro si ya existe para evitar duplicados
+                continue;
             }
 
-            // 2. Insertamos asegurando que el id_origen sea de IA (para que el frontend superior lo lea correctamente)
+            // Al usar texto plano ('Apollo.io'), el backend lo clasifica automáticamente para la tabla superior (Agentes IA)
+            const origenIA = lead.origen && lead.origen.trim() !== '' ? lead.origen : 'Apollo.io';
+
             const query = `
                 INSERT INTO leads (nombre_cliente, telefono, mensaje, id_origen) 
                 VALUES (?, ?, ?, ?)
             `;
 
-            const mensajeCompleto = `Empresa: ${lead.empresa} | Cargo: ${lead.cargo} | Calificación: ${lead.calificacion} | Análisis: ${lead.resumen}`;
+            // Formato estructurado para la columna de Interés / Calificación superior
+            const interesCalificacion = `[Calificación: ${lead.calificacion || 'Alta'}] Empresa: ${lead.empresa} | Cargo: ${lead.cargo} | Análisis: ${lead.resumen || lead.interes_inicial}`;
 
             const values = [
                 lead.nombre,
-                lead.telefono || 'Consultar Apollo',
-                mensajeCompleto,
-                lead.origen || 'Apollo.io'
+                lead.telefono && lead.telefono.trim() !== '' ? lead.telefono : 'Consultar en Apollo',
+                interesCalificacion,
+                origenIA
             ];
 
             await connection.execute(query, values);
             guardadosNuevos++;
         }
 
-        console.log(`3. Se guardaron ${guardadosNuevos} leads nuevos de IA sin duplicados.`);
-        return { success: true, message: `Se agregaron ${guardadosNuevos} prospectos nuevos` };
+        console.log(`3. Se guardaron ${guardadosNuevos} leads de IA en la sección superior.`);
+        return { success: true, message: `Se generaron ${guardadosNuevos} prospectos nuevos` };
 
     } catch (error) {
         console.error("Error al guardar en la base de datos:", error);
