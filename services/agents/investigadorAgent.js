@@ -24,7 +24,7 @@ async function obtenerProspectosCrudos() {
         return personas.map(p => {
             const nombreLimpio = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Prospecto IA';
 
-            // Extraer teléfono real de Apollo de forma segura
+            // Extraer teléfono real si existe
             let telefonoReal = '';
             if (p.phone_numbers && p.phone_numbers.length > 0) {
                 telefonoReal = p.phone_numbers[0].sanitized_number || p.phone_numbers[0].raw_number || '';
@@ -32,12 +32,19 @@ async function obtenerProspectosCrudos() {
                 telefonoReal = p.corporate_phone;
             }
 
+            // Si hay ID de persona en Apollo, creamos un enlace directo al perfil; si no, al buscador general
+            const apolloLink = p.id
+                ? `<a href="https://app.apollo.io/#/people/${p.id}" target="_blank" style="color: #007bff; text-decoration: underline;">Ver en Apollo</a>`
+                : `<a href="https://app.apollo.io/#/people" target="_blank" style="color: #007bff; text-decoration: underline;">Buscar en Apollo</a>`;
+
+            const contactoFinal = telefonoReal || apolloLink;
+
             return {
                 nombre: nombreLimpio,
                 empresa: p.organization?.name || 'Empresa Privada',
                 cargo: p.title || 'Directivo',
-                origen_id: 99, // ID numérico exclusivo para IA (evita conflictos con landings 1-5)
-                telefono: telefonoReal || 'No disponible (Ver Apollo)',
+                origen_id: 99,
+                telefono: contactoFinal,
                 calificacion: 'Alta',
                 resumen: `Cargo: ${p.title || 'Directivo'} | Email: ${p.email || 'No listado'} | Análisis: Interés detectado en sistemas de seguridad y cajas fuertes.`
             };
