@@ -133,7 +133,7 @@ app.post('/api/usuarios/borrar', async (req, res) => {
 
 // --- 6. APIs DE NEGOCIO (LEADS, ASESORES, BOLSA) ---
 
-// Obtener leads normales (Exclusivo para Landings: IDs numéricos o nulos)
+// Obtener leads normales (Exclusivo para Landings: IDs estrictamente numéricos o nulos)
 app.get('/api/leads', async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -162,13 +162,13 @@ app.get('/api/ver-leads', async (req, res) => {
     }
 });
 
-// --- 6.1 APIS DE GESTIÓN DE LEADS DE IA (Filtrados por Origen en texto real) ---
+// --- 6.1 APIS DE GESTIÓN DE LEADS DE IA (Exclusivo para la tabla superior) ---
 app.get('/api/leads-ia', async (req, res) => {
     try {
         const [rows] = await db.query(`
             SELECT * FROM leads 
-            WHERE id_origen NOT REGEXP '^[0-9]+$' 
-            AND id_origen IS NOT NULL 
+            WHERE (id_origen NOT REGEXP '^[0-9]+$' AND id_origen IS NOT NULL AND id_origen != '')
+            OR id_origen = 'Apollo.io'
             ORDER BY id DESC
         `);
         res.json(rows);
@@ -181,8 +181,8 @@ app.delete('/api/borrar-todos-ia', async (req, res) => {
     try {
         await db.query(`
             DELETE FROM leads 
-            WHERE id_origen NOT REGEXP '^[0-9]+$' 
-            AND id_origen IS NOT NULL
+            WHERE (id_origen NOT REGEXP '^[0-9]+$' AND id_origen IS NOT NULL AND id_origen != '')
+            OR id_origen = 'Apollo.io'
         `);
         res.json({ success: true });
     } catch (err) {
@@ -195,8 +195,8 @@ app.post('/api/asignar-todos-ia', async (req, res) => {
         const { nombre_asesor } = req.body;
         await db.query(`
             UPDATE leads SET nombre_asesor = ? 
-            WHERE id_origen NOT REGEXP '^[0-9]+$' 
-            AND id_origen IS NOT NULL
+            WHERE (id_origen NOT REGEXP '^[0-9]+$' AND id_origen IS NOT NULL AND id_origen != '')
+            OR id_origen = 'Apollo.io'
         `, [nombre_asesor]);
         res.json({ success: true });
     } catch (err) {
@@ -289,7 +289,6 @@ app.post('/api/agentes/ejecutar-prospeccion', async (req, res) => {
 
 app.get('/api/agentes/ejecutar-prospeccion-demo', async (req, res) => {
     try {
-        // Ahora dispara el flujo real masivo de agentes conectado a Apollo.io en lugar de datos simulados fijos
         const resultado = await ejecutarProcesoCompletoDeAgentes(db);
         return res.status(200).json({ success: true, ...resultado });
     } catch (error) {

@@ -26,13 +26,13 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
                 VALUES (?, ?, ?, ?)
             `;
 
-            const mensajeCalificacion = `[Calificación: ${lead.calificacion}] Empresa: ${lead.empresa} | ${lead.resumen}`;
+            const mensajeCalificacion = `[Calificación: ${lead.calificacion || 'Alta'}] Empresa: ${lead.empresa} | Cargo: ${lead.cargo} | ${lead.resumen || ''}`;
 
             const values = [
                 lead.nombre,
-                lead.telefono,
+                lead.telefono || 'Validar en Apollo',
                 mensajeCalificacion,
-                lead.origen || 'Apollo.io' // Garantiza que sea texto y suba a la tabla superior
+                'Apollo.io' // FUERZA ESTE TEXTO EXACTO PARA QUE VAYA A LA TABLA SUPERIOR
             ];
 
             await connection.execute(query, values);
@@ -40,7 +40,7 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
         }
         return { success: true, message: `Guardados ${guardadosNuevos} leads` };
     } catch (error) {
-        console.error("Error al guardar:", error);
+        console.error("Error al guardar en BD:", error);
         throw error;
     } finally {
         if (connection) await connection.end();
