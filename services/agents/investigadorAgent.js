@@ -32,6 +32,9 @@ async function obtenerProspectosCrudos() {
 
         return personas.map(p => {
             const nombreLimpio = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Prospecto IA';
+            const empresaNombre = p.organization?.name || 'Empresa Privada';
+            const cargoPersona = p.title || 'Directivo';
+            const correoPersona = p.email || 'No listado';
 
             let telefonoReal = '';
             if (p.phone_numbers && p.phone_numbers.length > 0) {
@@ -40,17 +43,24 @@ async function obtenerProspectosCrudos() {
                 telefonoReal = p.corporate_phone;
             }
 
-            // Texto plano limpio indicando que se consulte en Apollo si no hay teléfono
+            // Si hay teléfono lo ponemos, si no, dejamos una señal clara
             const textoTelefono = telefonoReal || 'No disponible (Ver en Apollo)';
+
+            // Construimos la URL exacta de Apollo usando el ID del prospecto
+            const linkApollo = p.id ? `https://app.apollo.io/#/people/${p.id}` : 'https://app.apollo.io/#/people';
+
+            // Estructuramos el resumen completo y detallado que se guardará en la base de datos (campo mensaje/resumen)
+            const resumenCompleto = `Empresa: ${empresaNombre} | Cargo: ${cargoPersona} | Email: ${correoPersona} | Apollo: ${linkApollo}`;
 
             return {
                 nombre: nombreLimpio,
-                empresa: p.organization?.name || 'Empresa Privada',
-                cargo: p.title || 'Directivo',
+                empresa: empresaNombre,
+                cargo: cargoPersona,
                 origen_id: 99,
                 telefono: textoTelefono,
                 calificacion: 'Alta',
-                resumen: `Cargo: ${p.title || 'Directivo'} | Email: ${p.email || 'No listado'} | Perfil Apollo: ${p.id ? `https://app.apollo.io/#/people/${p.id}` : 'https://app.apollo.io/#/people'}`
+                mensaje: resumenCompleto, // Mapeado directo para que coincida con la columna de inserción
+                resumen: resumenCompleto  // Compatibilidad por si se usa en otra capa
             };
         });
     } catch (error) {

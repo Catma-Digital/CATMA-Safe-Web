@@ -313,19 +313,20 @@
         if (globalLeadsIA && globalLeadsIA.length > 0) {
             tbodyIA.innerHTML = globalLeadsIA.map(l => {
                 const fechaLocal = l.fecha ? new Date(l.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A';
+                const textoDetalles = l.mensaje || 'Sin detalles adicionales';
 
                 const asignacionContenido = l.nombre_asesor
-                    ? `<div class="mb-1"><span class="badge bg-info text-dark">${l.nombre_asesor}</span></div><div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${l.mensaje || l.resumen || ''}\`)">${a.nombre}</button>`).join('')}</div>`
+                    ? `<div class="mb-1"><span class="badge bg-info text-dark">${l.nombre_asesor}</span></div><div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles}\`)">${a.nombre}</button>`).join('')}</div>`
                     : (globalAsesores && globalAsesores.length > 0
-                        ? `<div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${l.mensaje || l.resumen || ''}\`)">${a.nombre}</button>`).join('')}</div>`
+                        ? `<div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles}\`)">${a.nombre}</button>`).join('')}</div>`
                         : `<span class="text-muted small">Cargando asesores...</span>`);
 
                 return `<tr>
                     <td>${fechaLocal}</td>
                     <td><strong>${l.nombre_cliente || 'Sin nombre'}</strong></td>
                     <td><span class="badge bg-secondary">${l.id_origen || 'IA Apollo'}</span></td>
-                    <td>${l.telefono || '5500000000'}</td>
-                    <td>${l.mensaje || 'Prospecto generado por Agentes de IA'}</td>
+                    <td>${l.telefono || 'Consultar en Apollo'}</td>
+                    <td>${textoDetalles}</td>
                     <td style="width: 220px;">${asignacionContenido}</td>
                     <td><button class="btn btn-danger btn-sm" onclick="borrarLeadIA(${l.id})">Borrar</button></td>
                 </tr>`;
@@ -389,7 +390,7 @@
         }
     }
 
-    async function asignarWhatsAppIA(id, tel, nombre, asesorTel, asesorNombre, resumenLead) {
+    async function asignarWhatsAppIA(id, tel, nombre, asesorTel, asesorNombre, detallesLead) {
         try {
             await fetch(API_BASE + '/api/asignar-lead', {
                 method: 'POST',
@@ -401,7 +402,7 @@
         const mensajeWhatsApp = `Hola, asignamos un nuevo lead de IA:\n` +
             `*Cliente:* ${nombre}\n` +
             `*Teléfono:* ${tel}\n` +
-            `*Detalles:* ${resumenLead || 'Sin detalles adicionales'}`;
+            `*Información:* ${detallesLead || 'Sin detalles adicionales'}`;
 
         window.open(`https://wa.me/${asesorTel}?text=${encodeURIComponent(mensajeWhatsApp)}`, '_blank');
         cargarDatos();
