@@ -14,24 +14,26 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
         connection = await mysql.createConnection(dbConfig);
 
         for (const lead of leadsProcesados) {
+            // Adaptado para guardar directamente en la tabla 'leads' existente
             const query = `
-                INSERT INTO prospectos (fecha, prospecto, origen, telefono, cargo_empresa, calificacion, interes, asignacion) 
-                VALUES (NOW(), ?, ?, ?, ?, ?, ?, 'Pendiente')
+                INSERT INTO leads (nombre_cliente, telefono, mensaje, id_origen) 
+                VALUES (?, ?, ?, ?)
             `;
+
+            // Estructuramos el mensaje combinando la información de la IA y el cargo para que se vea completo en el panel
+            const mensajeCompleto = `Empresa: ${lead.empresa} | Cargo: ${lead.cargo} | Calificación: ${lead.calificacion} | Análisis: ${lead.resumen}`;
 
             const values = [
                 lead.nombre,
-                lead.origen,
-                lead.telefono,
-                `${lead.cargo} | ${lead.empresa}`,
-                lead.calificacion,
-                lead.resumen
+                lead.telefono || '5512345678',
+                mensajeCompleto,
+                lead.origen || 'Apollo API'
             ];
 
             await connection.execute(query, values);
         }
 
-        console.log("3. Todos los leads procesados se guardaron en MySQL correctamente.");
+        console.log("3. Todos los leads procesados se guardaron en la tabla 'leads' de My   SQL correctamente.");
         return { success: true, message: "Lote guardado con éxito" };
 
     } catch (error) {
