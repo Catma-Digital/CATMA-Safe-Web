@@ -8,8 +8,8 @@ const fs = require('fs');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 
-// Importación del orquestador necesaria para los agentes
-const { procesarProspectoCompleto } = require('./services/agents/agentesOrquestador');
+// Importación del orquestador y del agente investigador real de Apollo
+const { procesarProspectoCompleto, ejecutarProcesoCompletoDeAgentes } = require('./services/agents/agentesOrquestador');
 
 const app = express();
 
@@ -243,7 +243,7 @@ app.post('/api/asesores/crear', async (req, res) => {
         await db.query('INSERT INTO asesores (nombre, telefono) VALUES (?, ?)', [nombre, telefono]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.memory || err.message });
     }
 });
 
@@ -277,7 +277,7 @@ app.delete('/api/borrar-candidato/:id', async (req, res) => {
     }
 });
 
-// --- 7. ENDPOINTS DE AGENTES IA ---
+// --- 7. ENDPOINTS DE AGENTES IA (Conectados al flujo real de Apollo.io) ---
 app.post('/api/agentes/ejecutar-prospeccion', async (req, res) => {
     try {
         const leadCreado = await procesarProspectoCompleto(req.body, db);
@@ -289,36 +289,11 @@ app.post('/api/agentes/ejecutar-prospeccion', async (req, res) => {
 
 app.get('/api/agentes/ejecutar-prospeccion-demo', async (req, res) => {
     try {
-        const fuentes = ['IA Apollo', 'LinkedIn', 'Google Ads', 'Base Comercial', 'Directorio Web'];
-        const intereses = [
-            'Interesado en blindaje de unidades y seguridad corporativa (Calificación: Alto)',
-            'Busca cotización para equipos de control de acceso (Calificación: Medio)',
-            'Requiere consultoría en seguridad física e industrial (Calificación: Alto)',
-            'Interesado en pólizas de mantenimiento nivel oro (Calificación: Bajo)',
-            'Busca blindaje arquitectónico para sucursales (Calificación: Alto)'
-        ];
-
-        let leadsCreados = [];
-
-        // Generar 7 leads de prospección identificados por su origen real limpio
-        for (let i = 1; i <= 7; i++) {
-            const fuenteAleatoria = fuentes[Math.floor(Math.random() * fuentes.length)];
-            const interesAleatorio = intereses[Math.floor(Math.random() * intereses.length)];
-
-            const prospecto = {
-                nombre_cliente: `Prospecto IA ${i} (${fuenteAleatoria})`,
-                telefono: `551234560${i}`,
-                mensaje: interesAleatorio,
-                id_origen: fuenteAleatoria
-            };
-
-            const lead = await procesarProspectoCompleto(prospecto, db);
-            leadsCreados.push(lead);
-        }
-
-        return res.status(200).json({ success: true, count: leadsCreados.length, leads: leadsCreados });
+        // Ahora dispara el flujo real masivo de agentes conectado a Apollo.io en lugar de datos simulados fijos
+        const resultado = await ejecutarProcesoCompletoDeAgentes(db);
+        return res.status(200).json({ success: true, ...resultado });
     } catch (error) {
-        console.error('Error detallado en lote de agentes:', error);
+        console.error('Error detallado en flujo real de agentes:', error);
         return res.status(500).json({ success: false, error: error.message });
     }
 });
