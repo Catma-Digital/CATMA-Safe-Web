@@ -1,12 +1,12 @@
-import { obtenerProspectosCrudos } from './investigadorAgent.js';
-import { calificarProspecto } from './calificadorAgent.js';
-import { guardarLeadsEnBaseDeDatos } from './administradorAgent.js';
+const { obtenerProspectosCrudos } = require('./investigadorAgent.js');
+const { calificarProspecto } = require('./calificadorAgent.js');
+const { guardarLeadsEnBaseDeDatos } = require('./administradorAgent.js');
 
 /**
  * Procesa un prospecto individual paso a paso con los agentes y lo guarda en la BD.
  * Esta es la función que invoca tu index.js.
  */
-export async function procesarProspectoCompleto(prospecto, db) {
+async function procesarProspectoCompleto(prospecto, db) {
     try {
         console.log(`1. Calificando prospecto: ${prospecto.nombre_cliente || prospecto.nombre}...`);
 
@@ -43,7 +43,7 @@ export async function procesarProspectoCompleto(prospecto, db) {
 /**
  * Ejecuta el flujo masivo completo de los agentes.
  */
-export async function ejecutarProcesoCompletoDeAgentes() {
+async function ejecutarProcesoCompletoDeAgentes() {
     try {
         console.log("1. Investigador buscando prospectos...");
         const crudos = await obtenerProspectosCrudos();
@@ -72,3 +72,8 @@ export async function ejecutarProcesoCompletoDeAgentes() {
         throw error;
     }
 }
+
+module.exports = {
+    procesarProspectoCompleto,
+    ejecutarProcesoCompletoDeAgentes
+};
