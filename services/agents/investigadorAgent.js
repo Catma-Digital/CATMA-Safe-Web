@@ -1,7 +1,5 @@
 // Simulación de extracción o conexión con la fuente de prospectos (Apollo / LinkedIn / Google)
-export async function obtenerProspectosCrudos() {
-    // Aquí puedes simular o realizar la petición real a la API de Apollo.io
-    // Por ahora, definimos los datos base de prueba o la consulta de búsqueda:
+async function obtenerProspectosCrudos() {
     const prospectosCrudos = [
         {
             nombre: "Lic. Alejandro Gómez",
@@ -19,8 +17,11 @@ export async function obtenerProspectosCrudos() {
             telefono: "5586026615",
             interes_inicial: "Interés en Cajas fuertes, mantenimiento preventivo y correctivo, puertas de seguridad blindadas y ventanas blindadas, proyectos de corte y doblez especializado"
         }
-        // Puedes agregar más o conectar aquí la llamada HTTP a la API de Apollo.io
     ];
 
     return prospectosCrudos;
 }
+
+module.exports = {
+    obtenerProspectosCrudos
+};

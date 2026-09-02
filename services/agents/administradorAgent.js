@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+const mysql = require('mysql2/promise');
 
 // Crear la conexión usando las variables de entorno de tu .env
 const dbConfig = {
@@ -8,7 +8,7 @@ const dbConfig = {
     database: process.env.DB_NAME
 };
 
-export async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
+async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
     let connection;
     try {
         connection = await mysql.createConnection(dbConfig);
@@ -41,3 +41,7 @@ export async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
         if (connection) await connection.end();
     }
 }
+
+module.exports = {
+    guardarLeadsEnBaseDeDatos
+};

@@ -1,11 +1,11 @@
-import OpenAI from 'openai';
+const OpenAI = require('openai');
 
 // Inicializar OpenAI con la variable de entorno
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-export async function calificarProspecto(leadData) {
+async function calificarProspecto(leadData) {
     try {
         const systemPrompt = `
             Eres el núcleo de inteligencia comercial de CATMA Safe México. 
@@ -19,7 +19,7 @@ export async function calificarProspecto(leadData) {
         `;
 
         const response = await openai.chat.completions.create({
-            model: "gpt-4o-mini", // Modelo rápido, económico y muy potente para JSON
+            model: "gpt-4o-mini",
             messages: [
                 { role: "system", content: systemPrompt },
                 { role: "user", content: JSON.stringify(leadData) }
@@ -27,7 +27,6 @@ export async function calificarProspecto(leadData) {
             response_format: { type: "json_object" }
         });
 
-        // Parsear y devolver el resultado limpio de la IA
         return JSON.parse(response.choices[0].message.content);
 
     } catch (error) {
@@ -35,3 +34,7 @@ export async function calificarProspecto(leadData) {
         throw error;
     }
 }
+
+module.exports = {
+    calificarProspecto
+};
