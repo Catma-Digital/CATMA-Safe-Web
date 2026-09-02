@@ -14,7 +14,7 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
         let guardadosNuevos = 0;
 
         for (const lead of leadsProcesados) {
-            // Valida duplicados por nombre y empresa
+            // Evitamos duplicados
             const [existentes] = await connection.execute(
                 'SELECT id FROM leads WHERE nombre_cliente = ? AND mensaje LIKE ?',
                 [lead.nombre, `%${lead.empresa}%`]
@@ -33,9 +33,9 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
 
             const values = [
                 lead.nombre,
-                lead.telefono && lead.telefono.trim() !== '' ? lead.telefono : 'Consultar en Apollo',
+                lead.telefono || 'Consultar en Apollo',
                 mensajeCalificacion,
-                'Apollo.io' // Esto obliga a que el sistema los ubique en la tabla superior de Agentes IA
+                'Apollo.io' // Esto obliga a que el index.js los reconozca para la tabla superior
             ];
 
             await connection.execute(query, values);
@@ -48,7 +48,9 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
         console.error("Error al guardar en la base de datos:", error);
         throw error;
     } finally {
-        if (connection) await connection.end();
+        if (connection) {
+            await connection.end();
+        }
     }
 }
 
