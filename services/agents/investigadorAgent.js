@@ -5,10 +5,19 @@ async function obtenerProspectosCrudos() {
         const apiKey = process.env.APOLLO_API_KEY;
         if (!apiKey) throw new Error("Falta la API Key de Apollo");
 
+        // Generar un número de página aleatorio entre 1 y 15 para traer diferentes prospectos en cada lote
+        const paginaAleatoria = Math.floor(Math.random() * 15) + 1;
+
         const response = await axios.post('https://api.apollo.io/api/v1/mixed_people/api_search', {
-            person_titles: ["Gerente de Adquisiciones", "Gerente de Compras", "Director de Operaciones"],
+            person_titles: [
+                "Gerente de Adquisiciones",
+                "Gerente de Compras",
+                "Director de Operaciones",
+                "Gerente de Ventas",
+                "Director General"
+            ],
             organization_locations: ["Mexico"],
-            page: 1,
+            page: paginaAleatoria,
             per_page: 7
         }, {
             headers: {
@@ -31,7 +40,7 @@ async function obtenerProspectosCrudos() {
                 telefonoReal = p.corporate_phone;
             }
 
-            // Texto plano limpio (sin HTML) indicando que se consulte en Apollo si no hay teléfono
+            // Texto plano limpio indicando que se consulte en Apollo si no hay teléfono
             const textoTelefono = telefonoReal || 'No disponible (Ver en Apollo)';
 
             return {
