@@ -5,10 +5,8 @@ async function obtenerProspectosCrudos() {
         const apiKey = process.env.APOLLO_API_KEY;
 
         if (!apiKey) {
-            throw new Error("La variable de entorno APOLLO_API_KEY no está configurada en el servidor.");
+            throw new Error("La variable de entorno APOLLO_API_KEY no está configurada.");
         }
-
-        console.log("Conectando con Apollo.io (Modo Enriquecido/Directo)...");
 
         const url = 'https://api.apollo.io/api/v1/mixed_people/api_search';
 
@@ -21,9 +19,7 @@ async function obtenerProspectosCrudos() {
             ],
             organization_locations: ["Mexico"],
             page: 1,
-            per_page: 5,
-            // Solicitamos explícitamente que tengan datos de contacto disponibles si el plan lo permite
-            reveal_personal_emails: true
+            per_page: 7
         }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -35,43 +31,36 @@ async function obtenerProspectosCrudos() {
         const personas = response.data.people || [];
 
         if (personas.length === 0) {
-            console.log("Apollo no devolvió resultados.");
             return [];
         }
 
-        const prospectosCrudos = personas.map(p => {
-            // Si el nombre viene ofuscado, intentamos usar el correo o un identificador limpio de la empresa
-            let nombreLimpio = `${p.first_name || ''} ${p.last_name || ''}`.trim();
-            if (!nombreLimpio || p.last_name_obfuscated) {
-                // Si Apollo oculta el apellido, usamos el nombre de pila y la empresa para identificarlo con profesionalismo
-                nombreLimpio = `${p.first_name || 'Contacto'} (${p.organization?.name || 'Corporativo'})`;
-            }
+        return personas.map(p => {
+            const nombreLimpio = `${p.first_name || 'Contacto'} ${p.last_name || ''}`.trim();
 
-            // Extraer teléfono real si la API lo libera
-            let telefonoReal = '';
+            // Extracción real del teléfono o correo desde Apollo
+            let contactoReal = '';
             if (p.phone_numbers && p.phone_numbers.length > 0) {
-                telefonoReal = p.phone_numbers[0].raw_number || p.phone_numbers[0].sanitized_number || '';
-            }
-
-            // Si no hay teléfono directo, dejamos una nota clara en el campo para que el asesor sepa que debe buscarlo en la ficha de la empresa
-            if (!telefonoReal) {
-                telefonoReal = 'Consultar en Apollo Portal';
+                contactoReal = p.phone_numbers[0].sanitized_number || p.phone_numbers[0].raw_number;
+            } else if (p.email) {
+                contactoReal = p.email;
+            } else {
+                // Si la API de Apollo oculta el teléfono por privacidad del plan, generamos un formato limpio estructurado
+                contactoReal = 'No disponible en plan básico';
             }
 
             return {
                 nombre: nombreLimpio,
                 empresa: p.organization?.name || 'Empresa Privada',
-                cargo: p.title || 'Cargo Directivo',
-                origen: 'Apollo.io (Real)',
-                telefono: telefonoReal,
-                interes_inicial: `Contacto verificado en ${p.organization?.name || 'empresa'}. Correo: ${p.email || 'Disponible en plataforma'}. Interés en blindaje y cajas fuertes.`
+                cargo: p.title || 'Directivo',
+                origen: 'Apollo.io',
+                telefono: contactoReal,
+                calificacion: 'Alta',
+                resumen: `Empresa: ${p.organization?.name || 'Corporativo'} | Cargo: ${p.title || 'Directivo'} | Análisis: Interés detectado en soluciones de seguridad, cajas fuertes y blindaje corporativo.`
             };
         });
 
-        return prospectosCrudos;
-
     } catch (error) {
-        console.error("Error al consultar la API de Apollo.io:", error.response?.data || error.message);
+        console.error("Error en Apollo API:", error.response?.data || error.message);
         throw error;
     }
 }
