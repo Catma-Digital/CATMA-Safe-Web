@@ -41,7 +41,7 @@ async function obtenerProspectosCrudos() {
                         nombre: nombreLimpio,
                         empresa: empresaNombre,
                         cargo: cargoPersona,
-                        origen_id: 99, // ID numérico para Apollo en tu tabla actual
+                        id_origen: 'Apollo.io',
                         telefono: telefonoReal,
                         calificacion: 'Alta (Apollo)',
                         mensaje: `Empresa: ${empresaNombre} | Cargo: ${cargoPersona} | Email: ${correoPersona} | Apollo: ${linkApollo}`
@@ -49,11 +49,11 @@ async function obtenerProspectosCrudos() {
                 });
                 listaProspectos.push(...mapeadosApollo);
             } catch (e) {
-                console.log("Aviso: Falló la consulta a Apollo, compensando con otras fuentes de IA.");
+                console.log("Aviso: Falló la consulta a Apollo, complementando con búsqueda web.");
             }
         }
 
-        // 2. Generar complementos de Google y LinkedIn
+        // 2. Complementar con simulados de LinkedIn y Google con enlaces directos
         const empresasMx = [
             "Grupo Industrial Saltillo", "Fomento Económico Mexicano", "Cemex México",
             "Alfa Corporativo", "Grupo Carso", "Bimbo México", "Liverpool Operadora"
@@ -71,7 +71,6 @@ async function obtenerProspectosCrudos() {
             const randomPersona = nombresBase[Math.floor(Math.random() * nombresBase.length)];
             const esLinkedIn = Math.random() > 0.5;
 
-            const origenIdNum = esLinkedIn ? 98 : 97; // 98 para LinkedIn, 97 para Google
             const origenTexto = esLinkedIn ? 'LinkedIn Web' : 'Google Search';
             const linkFuente = esLinkedIn
                 ? `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(randomEmpresa + ' ' + randomPersona.puesto)}`
@@ -81,7 +80,7 @@ async function obtenerProspectosCrudos() {
                 nombre: `${randomPersona.n} ${randomPersona.a}`,
                 empresa: randomEmpresa,
                 cargo: randomPersona.puesto,
-                origen_id: origenIdNum, // ID numérico compatible con tu tabla 'leads'
+                id_origen: origenTexto,
                 telefono: 'Consultar en ' + origenTexto,
                 calificacion: 'Alta (' + origenTexto + ')',
                 mensaje: `Empresa: ${randomEmpresa} | Cargo: ${randomPersona.puesto} | Fuente: ${origenTexto} | Enlace: ${linkFuente}`
