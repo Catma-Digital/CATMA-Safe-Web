@@ -34,7 +34,7 @@ async function obtenerProspectosCrudos() {
                     const empresaNombre = p.organization?.name || 'Empresa Privada';
                     const cargoPersona = p.title || 'Directivo';
                     const correoPersona = p.email || 'No listado';
-                    const telefonoReal = p.phone_numbers?.[0]?.sanitized_number || p.phone_numbers?.[0]?.raw_number || p.corporate_phone || 'Consultar en Apollo';
+                    const telefonoReal = p.phone_numbers?.[0]?.sanitized_number || p.phone_numbers?.[0]?.raw_number || p.corporate_phone || 'Consultar';
                     const linkApollo = p.id ? `https://app.apollo.io/#/people/${p.id}` : 'https://app.apollo.io/#/people';
 
                     return {
@@ -44,7 +44,7 @@ async function obtenerProspectosCrudos() {
                         id_origen: 'Apollo.io',
                         telefono: telefonoReal,
                         calificacion: 'Alta (Apollo)',
-                        mensaje: `Empresa: ${empresaNombre} | Cargo: ${cargoPersona} | Email: ${correoPersona} | Apollo: ${linkApollo}`
+                        mensaje: `Empresa: ${empresaNombre} | Cargo: ${cargoPersona} | Email: ${correoPersona} | <a href="${linkApollo}" target="_blank" class="text-primary fw-bold">🔗 Abrir en Apollo</a>`
                     };
                 });
                 listaProspectos.push(...mapeadosApollo);
@@ -53,7 +53,7 @@ async function obtenerProspectosCrudos() {
             }
         }
 
-        // 2. Complementar con simulados de LinkedIn y Google con enlaces directos
+        // 2. Complementar con simulados de LinkedIn y Google con enlaces directos clickeables
         const empresasMx = [
             "Grupo Industrial Saltillo", "Fomento Económico Mexicano", "Cemex México",
             "Alfa Corporativo", "Grupo Carso", "Bimbo México", "Liverpool Operadora"
@@ -81,9 +81,9 @@ async function obtenerProspectosCrudos() {
                 empresa: randomEmpresa,
                 cargo: randomPersona.puesto,
                 id_origen: origenTexto,
-                telefono: 'Consultar en ' + origenTexto,
-                calificacion: 'Alta (' + origenTexto + ')',
-                mensaje: `Empresa: ${randomEmpresa} | Cargo: ${randomPersona.puesto} | Fuente: ${origenTexto} | Enlace: ${linkFuente}`
+                telefono: 'Consultar',
+                calificacion: `Alta (${origenTexto})`,
+                mensaje: `Empresa: ${randomEmpresa} | Cargo: ${randomPersona.puesto} | <a href="${linkFuente}" target="_blank" class="text-primary fw-bold">🔗 Buscar en ${origenTexto}</a>`
             });
         }
 

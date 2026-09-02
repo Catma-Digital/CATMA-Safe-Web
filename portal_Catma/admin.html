@@ -317,18 +317,24 @@
             tbodyIA.innerHTML = globalLeadsIA.map(l => {
                 const fechaLocal = l.fecha ? new Date(l.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : 'N/A';
                 const textoDetalles = l.mensaje || 'Sin detalles adicionales';
-                const origen = configOrigen[l.id_origen] || { nombre: l.id_origen || 'IA Apollo', clase: 'bg-secondary' };
+
+                // Mapeo flexible de etiquetas según el origen real
+                let claseOrigen = 'bg-secondary';
+                let nombreOrigen = l.id_origen || 'IA Apollo';
+                if (nombreOrigen === 'Apollo.io' || l.id_origen === 99) { claseOrigen = 'bg-primary'; nombreOrigen = 'Apollo.io'; }
+                else if (nombreOrigen === 'LinkedIn Web' || l.id_origen === 98) { claseOrigen = 'bg-info text-dark'; nombreOrigen = 'LinkedIn Web'; }
+                else if (nombreOrigen === 'Google Search' || l.id_origen === 97) { claseOrigen = 'bg-warning text-dark'; nombreOrigen = 'Google Search'; }
 
                 const asignacionContenido = l.nombre_asesor
-                    ? `<div class="mb-1"><span class="badge bg-info text-dark">${l.nombre_asesor}</span></div><div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles}\`)">${a.nombre}</button>`).join('')}</div>`
+                    ? `<div class="mb-1"><span class="badge bg-info text-dark">${l.nombre_asesor}</span></div><div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles.replace(/<[^>]*>?/gm, '')}\`)">${a.nombre}</button>`).join('')}</div>`
                     : (globalAsesores && globalAsesores.length > 0
-                        ? `<div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles}\`)">${a.nombre}</button>`).join('')}</div>`
+                        ? `<div class="scroll-asesores">${globalAsesores.map(a => `<button class="btn btn-asesor ${getColorAsesor(a.nombre)}" onclick="asignarWhatsAppIA(${l.id}, '${l.telefono}', '${l.nombre_cliente}', '${a.telefono}', '${a.nombre}', \`${textoDetalles.replace(/<[^>]*>?/gm, '')}\`)">${a.nombre}</button>`).join('')}</div>`
                         : `<span class="text-muted small">Cargando asesores...</span>`);
 
                 return `<tr>
                     <td>${fechaLocal}</td>
                     <td><strong>${l.nombre_cliente || 'Sin nombre'}</strong></td>
-                    <td><span class="badge ${origen.clase}">${origen.nombre}</span></td>
+                    <td><span class="badge ${claseOrigen}">${nombreOrigen}</span></td>
                     <td>${l.telefono || 'Consultar'}</td>
                     <td>${textoDetalles}</td>
                     <td style="width: 220px;">${asignacionContenido}</td>
