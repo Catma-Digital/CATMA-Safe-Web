@@ -14,7 +14,7 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
         let guardadosNuevos = 0;
 
         for (const lead of leadsProcesados) {
-            // Evitamos duplicados
+            // Evitamos duplicados basándonos en el nombre y empresa
             const [existentes] = await connection.execute(
                 'SELECT id FROM leads WHERE nombre_cliente = ? AND mensaje LIKE ?',
                 [lead.nombre, `%${lead.empresa}%`]
@@ -35,7 +35,7 @@ async function guardarLeadsEnBaseDeDatos(leadsProcesados) {
                 lead.nombre,
                 lead.telefono || 'Consultar en Apollo',
                 mensajeCalificacion,
-                'Apollo.io' // Esto obliga a que el index.js los reconozca para la tabla superior
+                'Apollo.io' // Esto garantiza matemáticamente que el index.js los mande arriba
             ];
 
             await connection.execute(query, values);
