@@ -319,19 +319,27 @@
 
                 let textoDetalles = l.mensaje || 'Sin detalles adicionales';
 
-                // Procesamiento inteligente integrado directamente en el renderizado sin parches externos
-                if (!textoDetalles.includes('<a href') && textoDetalles.includes('Empresa:')) {
-                    const matchEmpresa = textoDetalles.match(/Empresa:\s*([^|]+)/);
-                    const nombreEmpresa = matchEmpresa ? matchEmpresa[1].trim() : 'Empresa';
-                    const esGoogle = textoDetalles.includes('Google Search');
-                    const esLinkedIn = textoDetalles.includes('LinkedIn');
+                // Si el backend ya trae una URL de Apollo o texto plano, aseguramos que muestre el enlace exacto con su URL real tal como en la segunda imagen
+                if (!textoDetalles.includes('<a href')) {
+                    if (textoDetalles.includes('Apollo: https://')) {
+                        // Reemplaza texto plano tipo "Apollo: https://..." por un enlace HTML funcional
+                        textoDetalles = textoDetalles.replace(
+                            /(Apollo:\s*)(https:\/\/app\.apollo\.io\/[^\s]+)/g,
+                            '$1<a href="$2" target="_blank" class="text-primary fw-bold text-decoration-underline">Abrir en Apollo</a>'
+                        );
+                    } else if (textoDetalles.includes('Empresa:')) {
+                        const matchEmpresa = textoDetalles.match(/Empresa:\s*([^|]+)/);
+                        const nombreEmpresa = matchEmpresa ? matchEmpresa[1].trim() : 'Empresa';
+                        const esGoogle = textoDetalles.includes('Google Search');
+                        const esLinkedIn = textoDetalles.includes('LinkedIn');
 
-                    let urlBusqueda = esGoogle
-                        ? `https://www.google.com/search?q=${encodeURIComponent(nombreEmpresa + ' contacto Mexico')}`
-                        : (esLinkedIn ? `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(nombreEmpresa)}` : `https://app.apollo.io/#/people`);
+                        let urlBusqueda = esGoogle
+                            ? `https://www.google.com/search?q=${encodeURIComponent(nombreEmpresa + ' contacto Mexico')}`
+                            : (esLinkedIn ? `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(nombreEmpresa)}` : `https://app.apollo.io/#/people`);
 
-                    let etiquetaNombre = esGoogle ? '🔗 Buscar en Google' : (esLinkedIn ? '🔗 Buscar en LinkedIn' : '🔗 Abrir en Apollo');
-                    textoDetalles = `${textoDetalles} | <a href="${urlBusqueda}" target="_blank" class="text-primary fw-bold text-decoration-underline">${etiquetaNombre}</a>`;
+                        let etiquetaNombre = esGoogle ? '🔗 Buscar en Google' : (esLinkedIn ? '🔗 Buscar en LinkedIn' : '🔗 Abrir en Apollo');
+                        textoDetalles = `${textoDetalles} | <a href="${urlBusqueda}" target="_blank" class="text-primary fw-bold text-decoration-underline">${etiquetaNombre}</a>`;
+                    }
                 }
 
                 // Mapeo flexible de etiquetas según el origen real
