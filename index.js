@@ -121,38 +121,26 @@ app.post('/api/usuarios/borrar', async (req, res) => {
     }
 });
 
-// --- APIs DE NEGOCIO BLINDADAS (SIN ERRORES 500 AL CLIENTE) ---
+// --- APIs DE NEGOCIO CONECTADAS A LA COLUMNA REAL (nombre_cliente) ---
 
 app.post('/api/leads', async (req, res) => {
     try {
         const { nombre, nombre_cliente, telefono, mensaje, comentarios, origen, id_origen } = req.body;
-        const nombreFinal = nombre || nombre_cliente || 'Sin nombre';
+        const nombreFinal = nombre_cliente || nombre || 'Sin nombre';
         const telefonoFinal = telefono || 'Sin teléfono';
         const mensajeFinal = mensaje || comentarios || '';
-        const origenFinal = origen || id_origen || 3;
+        const origenFinal = (id_origen !== undefined && id_origen !== '') ? id_origen : (origen || 3);
 
-        try {
-            await db.query(
-                'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
-                [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
-            );
-        } catch (e1) {
-            try {
-                await db.query(
-                    'INSERT INTO leads (nombre, telefono, comentarios, id_origen) VALUES (?, ?, ?, ?)',
-                    [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
-                );
-            } catch (e2) {
-                await db.query(
-                    'INSERT INTO leads (nombre, telefono) VALUES (?, ?)',
-                    [nombreFinal, telefonoFinal]
-                );
-            }
-        }
+        await db.query(
+            'INSERT INTO leads (nombre_cliente, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
+            [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
+        );
+
+        return res.json({ success: true, message: 'Lead registrado correctamente en base de datos' });
     } catch (error) {
-        console.error("Error silenciado en /api/leads:", error.message);
+        console.error("Error real en /api/leads:", error);
+        return res.status(500).json({ success: false, error: error.message });
     }
-    return res.json({ success: true, message: 'Lead registrado correctamente' });
 });
 
 app.post('/api/registro-lead', async (req, res) => {
@@ -161,34 +149,18 @@ app.post('/api/registro-lead', async (req, res) => {
         const nombreFinal = nombre_cliente || nombre || 'Sin nombre';
         const telefonoFinal = telefono || 'Sin teléfono';
         const mensajeFinal = mensaje || comentarios || '';
-        const origenFinal = id_origen !== undefined ? id_origen : 3;
+        const origenFinal = (id_origen !== undefined && id_origen !== '') ? id_origen : 3;
 
-        try {
-            await db.query(
-                'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
-                [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
-            );
-        } catch (err1) {
-            try {
-                await db.query(
-                    'INSERT INTO leads (nombre, telefono, comentarios, id_origen) VALUES (?, ?, ?, ?)',
-                    [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
-                );
-            } catch (err2) {
-                try {
-                    await db.query(
-                        'INSERT INTO leads (nombre, telefono) VALUES (?, ?)',
-                        [nombreFinal, telefonoFinal]
-                    );
-                } catch (err3) {
-                    console.error("Error DB crítico en registro-lead:", err3.message);
-                }
-            }
-        }
+        await db.query(
+            'INSERT INTO leads (nombre_cliente, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
+            [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
+        );
+
+        return res.json({ success: true, message: 'Solicitud enviada con éxito' });
     } catch (error) {
-        console.error("Error silenciado en /api/registro-lead:", error.message);
+        console.error("Error real en /api/registro-lead:", error);
+        return res.status(500).json({ success: false, error: error.message });
     }
-    return res.json({ success: true, message: 'Solicitud enviada con éxito' });
 });
 
 app.get('/api/leads', async (req, res) => {
