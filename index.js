@@ -147,16 +147,21 @@ app.post('/api/leads', async (req, res) => {
     }
 });
 
-// Recibir leads desde la landing de cajas (Compatible con nombre_cliente e id_origen numérico)
+// Recibir leads desde la landing de cajas (Soporta nombre_cliente / nombre y mapea id_origen correctamente)
 app.post('/api/registro-lead', async (req, res) => {
     try {
-        const { nombre_cliente, telefono, mensaje, id_origen } = req.body;
+        const nombreFinal = req.body.nombre_cliente || req.body.nombre;
+        const telefonoFinal = req.body.telefono;
+        const mensajeFinal = req.body.mensaje;
+        const origenFinal = req.body.id_origen !== undefined ? req.body.id_origen : 3;
+
         await db.query(
             'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
-            [nombre_cliente, telefono, mensaje, id_origen || 3]
+            [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
         );
         res.json({ success: true, message: 'Lead registrado correctamente' });
     } catch (error) {
+        console.error("Error en /api/registro-lead:", error);
         res.status(500).json({ error: error.message });
     }
 });
