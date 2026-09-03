@@ -133,13 +133,27 @@ app.post('/api/usuarios/borrar', async (req, res) => {
 
 // --- 6. APIs DE NEGOCIO (LEADS, ASESORES, BOLSA) ---
 
-// Recibir leads desde las Landing Pages (Restaurado)
+// Recibir leads desde las Landing Pages (General)
 app.post('/api/leads', async (req, res) => {
     try {
         const { nombre, telefono, mensaje, origen } = req.body;
         await db.query(
             'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
             [nombre, telefono, mensaje, origen || 'Landing Page']
+        );
+        res.json({ success: true, message: 'Lead registrado correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Recibir leads desde la landing de cajas (Compatible con nombre_cliente e id_origen numérico)
+app.post('/api/registro-lead', async (req, res) => {
+    try {
+        const { nombre_cliente, telefono, mensaje, id_origen } = req.body;
+        await db.query(
+            'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
+            [nombre_cliente, telefono, mensaje, id_origen || 3]
         );
         res.json({ success: true, message: 'Lead registrado correctamente' });
     } catch (error) {
