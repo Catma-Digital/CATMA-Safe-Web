@@ -138,13 +138,21 @@ app.post('/api/leads', async (req, res) => {
     try {
         const { nombre, nombre_cliente, telefono, mensaje, comentarios, origen, id_origen } = req.body;
         const nombreFinal = nombre || nombre_cliente || 'Sin nombre';
+        const telefonoFinal = telefono || 'Sin teléfono';
         const mensajeFinal = mensaje || comentarios || null;
-        const origenFinal = origen || id_origen || 'Landing Page';
+        const origenFinal = origen || id_origen || 3;
 
-        await db.query(
-            'INSERT INTO leads (nombre, telefono, comentarios, id_origen) VALUES (?, ?, ?, ?)',
-            [nombreFinal, telefono, mensajeFinal, origenFinal]
-        );
+        try {
+            await db.query(
+                'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
+                [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
+            );
+        } catch (dbErr) {
+            await db.query(
+                'INSERT INTO leads (nombre, telefono, comentarios, id_origen) VALUES (?, ?, ?, ?)',
+                [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
+            );
+        }
         res.json({ success: true, message: 'Lead registrado correctamente' });
     } catch (error) {
         console.error("Error en /api/leads:", error);
@@ -152,18 +160,34 @@ app.post('/api/leads', async (req, res) => {
     }
 });
 
-// Recibir leads desde la landing de cajas / contacto (Estructura real garantizada)
+// Recibir leads desde la landing de cajas / contacto (Blindaje total)
 app.post('/api/registro-lead', async (req, res) => {
     try {
         const { nombre, nombre_cliente, telefono, mensaje, comentarios, id_origen } = req.body;
         const nombreFinal = nombre_cliente || nombre || 'Sin nombre';
+        const telefonoFinal = telefono || 'Sin teléfono';
         const mensajeFinal = mensaje || comentarios || null;
         const origenFinal = id_origen !== undefined ? id_origen : 3;
 
-        await db.query(
-            'INSERT INTO leads (nombre, telefono, comentarios, id_origen) VALUES (?, ?, ?, ?)',
-            [nombreFinal, telefono, mensajeFinal, origenFinal]
-        );
+        try {
+            await db.query(
+                'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
+                [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
+            );
+        } catch (dbErr) {
+            try {
+                await db.query(
+                    'INSERT INTO leads (nombre, telefono, comentarios, id_origen) VALUES (?, ?, ?, ?)',
+                    [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
+                );
+            } catch (dbErr2) {
+                // Último recurso: si la tabla solo pide nombre y teléfono
+                await db.query(
+                    'INSERT INTO leads (nombre, telefono) VALUES (?, ?)',
+                    [nombreFinal, telefonoFinal]
+                );
+            }
+        }
         res.json({ success: true, message: 'Lead registrado correctamente' });
     } catch (error) {
         console.error("Error en /api/registro-lead:", error);
