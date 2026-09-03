@@ -133,6 +133,20 @@ app.post('/api/usuarios/borrar', async (req, res) => {
 
 // --- 6. APIs DE NEGOCIO (LEADS, ASESORES, BOLSA) ---
 
+// Recibir leads desde las Landing Pages (Restaurado)
+app.post('/api/leads', async (req, res) => {
+    try {
+        const { nombre, telefono, mensaje, origen } = req.body;
+        await db.query(
+            'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
+            [nombre, telefono, mensaje, origen || 'Landing Page']
+        );
+        res.json({ success: true, message: 'Lead registrado correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Obtener leads normales de Landings (Inferior): Excluye estrictamente el identificador 99 de IA
 app.get('/api/leads', async (req, res) => {
     try {
@@ -251,6 +265,22 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// Recibir Bolsa de Trabajo / Solicitudes de empleo con PDF (Restaurado)
+app.post('/api/bolsa', upload.single('cv'), async (req, res) => {
+    try {
+        const { nombre, telefono } = req.body;
+        const cvArchivo = req.file ? req.file.filename : null;
+
+        await db.query(
+            'INSERT INTO bolsa_trabajo (nombre, telefono, cv) VALUES (?, ?, ?)',
+            [nombre, telefono, cvArchivo]
+        );
+        res.json({ success: true, message: 'Solicitud enviada correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
