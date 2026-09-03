@@ -8,7 +8,7 @@ const fs = require('fs');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 
-// Importación del orquestador y del agente investigador real de Apollo (Intactos)
+// Importación del orquestador y del agente investigador real de Apollo
 const { procesarProspectoCompleto, ejecutarProcesoCompletoDeAgentes } = require('./services/agents/agentesOrquestador');
 
 const app = express();
@@ -143,27 +143,21 @@ app.post('/api/leads', async (req, res) => {
         );
         res.json({ success: true, message: 'Lead registrado correctamente' });
     } catch (error) {
-        console.error("ERROR SQL EN /api/leads:", error.sqlMessage || error.message);
-        res.status(500).json({ error: error.sqlMessage || error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Recibir leads desde la landing de cajas (Soporta tanto nombre_cliente como nombre genérico)
+// Recibir leads desde la landing de cajas (Compatible con nombre_cliente e id_origen numérico)
 app.post('/api/registro-lead', async (req, res) => {
     try {
-        const nombreFinal = req.body.nombre_cliente || req.body.nombre;
-        const telefonoFinal = req.body.telefono;
-        const mensajeFinal = req.body.mensaje;
-        const origenFinal = req.body.id_origen || 3;
-
+        const { nombre_cliente, telefono, mensaje, id_origen } = req.body;
         await db.query(
             'INSERT INTO leads (nombre, telefono, mensaje, id_origen) VALUES (?, ?, ?, ?)',
-            [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
+            [nombre_cliente, telefono, mensaje, id_origen || 3]
         );
         res.json({ success: true, message: 'Lead registrado correctamente' });
     } catch (error) {
-        console.error("ERROR SQL EN /api/registro-lead:", error.sqlMessage || error.message);
-        res.status(500).json({ error: error.sqlMessage || error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -300,8 +294,7 @@ app.post('/api/bolsa', upload.single('cv'), async (req, res) => {
         );
         res.json({ success: true, message: 'Solicitud enviada correctamente' });
     } catch (error) {
-        console.error("ERROR SQL EN /api/bolsa:", error.sqlMessage || error.message);
-        res.status(500).json({ error: error.sqlMessage || error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -325,7 +318,7 @@ app.delete('/api/borrar-candidato/:id', async (req, res) => {
     }
 });
 
-// --- 7. ENDPOINTS DE AGENTES IA (Intactos y funcionando) ---
+// --- 7. ENDPOINTS DE AGENTES IA (Conectados al flujo real de Apollo.io) ---
 app.post('/api/agentes/ejecutar-prospeccion', async (req, res) => {
     try {
         const leadCreado = await procesarProspectoCompleto(req.body, db);
