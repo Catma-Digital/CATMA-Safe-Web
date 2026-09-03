@@ -157,12 +157,12 @@ app.post('/api/leads', async (req, res) => {
         }
         return res.json({ success: true, message: 'Lead registrado correctamente' });
     } catch (error) {
-        console.error("Aviso en /api/leads (capturado):", error.message);
-        return res.json({ success: true, message: 'Lead procesado' });
+        console.error("Error en /api/leads:", error);
+        return res.status(500).json({ error: error.message });
     }
 });
 
-// SOLUCIÓN DEFINITIVA PARA /api/registro-lead: Nunca arroja 500
+// Inserción real y garantizada para Leads (Landing pages / formularios de contacto)
 app.post('/api/registro-lead', async (req, res) => {
     try {
         const { nombre, nombre_cliente, telefono, mensaje, comentarios, id_origen } = req.body;
@@ -183,20 +183,16 @@ app.post('/api/registro-lead', async (req, res) => {
                     [nombreFinal, telefonoFinal, mensajeFinal, origenFinal]
                 );
             } catch (err2) {
-                try {
-                    await db.query(
-                        'INSERT INTO leads (nombre, telefono) VALUES (?, ?)',
-                        [nombreFinal, telefonoFinal]
-                    );
-                } catch (err3) {
-                    console.log("Base de datos en modo estricto, omitiendo inserción física pero respondiendo OK al cliente.");
-                }
+                await db.query(
+                    'INSERT INTO leads (nombre, telefono) VALUES (?, ?)',
+                    [nombreFinal, telefonoFinal]
+                );
             }
         }
-        return res.status(200).json({ success: true, message: 'Solicitud enviada con éxito' });
+        return res.json({ success: true, message: 'Solicitud enviada con éxito' });
     } catch (error) {
-        console.error("Error controlado en /api/registro-lead:", error.message);
-        return res.status(200).json({ success: true, message: 'Solicitud recibida' });
+        console.error("Error en /api/registro-lead:", error);
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -210,7 +206,7 @@ app.get('/api/leads', async (req, res) => {
         `);
         res.json(rows);
     } catch (error) {
-        res.json([]);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -224,7 +220,7 @@ app.get('/api/ver-leads', async (req, res) => {
         `);
         res.json(rows);
     } catch (error) {
-        res.json([]);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -238,7 +234,7 @@ app.get('/api/leads-ia', async (req, res) => {
         `);
         res.json(rows);
     } catch (error) {
-        res.json([]);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -285,7 +281,7 @@ app.get('/api/asesores', async (req, res) => {
         const [rows] = await db.query('SELECT * FROM asesores');
         res.json(rows);
     } catch (err) {
-        res.json([]);
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -308,18 +304,36 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
+// Inserción real y garantizada para Bolsa de Trabajo / Candidatos
 app.post('/api/bolsa', upload.single('cv'), async (req, res) => {
     try {
-        const { nombre, telefono, cv } = req.body;
+        const { nombre, telefono, email, correo, mensaje, puesto, cv } = req.body;
+        const emailFinal = email || correo || null;
+        const mensajeFinal = mensaje || puesto || null;
         const cvArchivo = req.file ? req.file.filename : (cv || null);
 
-        await db.query(
-            'INSERT INTO bolsa_trabajo (nombre, telefono, cv) VALUES (?, ?, ?)',
-            [nombre, telefono, cvArchivo]
-        );
-        res.json({ success: true, message: 'Solicitud enviada correctamente' });
+        try {
+            await db.query(
+                'INSERT INTO bolsa_trabajo (nombre, telefono, email, mensaje, cv) VALUES (?, ?, ?, ?, ?)',
+                [nombre, telefono, emailFinal, mensajeFinal, cvArchivo]
+            );
+        } catch (err1) {
+            try {
+                await db.query(
+                    'INSERT INTO bolsa_trabajo (nombre, telefono, correo, puesto, cv) VALUES (?, ?, ?, ?, ?)',
+                    [nombre, telefono, emailFinal, mensajeFinal, cvArchivo]
+                );
+            } catch (err2) {
+                await db.query(
+                    'INSERT INTO bolsa_trabajo (nombre, telefono, cv) VALUES (?, ?, ?)',
+                    [nombre, telefono, cvArchivo]
+                );
+            }
+        }
+        return res.json({ success: true, message: 'Solicitud enviada correctamente' });
     } catch (error) {
-        res.json({ success: true, message: 'Solicitud registrada' });
+        console.error("Error en /api/bolsa:", error);
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -328,7 +342,7 @@ app.get('/api/ver-bolsa', async (req, res) => {
         const [rows] = await db.query('SELECT * FROM bolsa_trabajo ORDER BY id DESC');
         res.json(rows);
     } catch (err) {
-        res.json([]);
+        res.status(500).json({ error: err.message });
     }
 });
 
