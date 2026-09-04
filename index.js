@@ -270,22 +270,20 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
-// --- ENDPOINTS DE BOLSA DE TRABAJO (Con inclusión explícita de fecha y manejo de errores detallado) ---
+// --- ENDPOINTS DE BOLSA DE TRABAJO (Con columnas independientes y rutas comodín) ---
 const manejarBolsaTrabajo = async (req, res) => {
     try {
         const { nombre, nombre_cliente, telefono, email, correo, mensaje, puesto } = req.body;
 
         const nombreFinal = nombre_cliente || nombre || 'Sin nombre';
-        const telefonoStr = telefono ? `Tel: ${telefono}` : '';
-        const emailStr = email || correo ? `Email: ${email || correo}` : '';
-        const mensajeStr = mensaje || puesto || '';
-
-        const mensajeCompleto = [nombreFinal, telefonoStr, emailStr, mensajeStr].filter(Boolean).join(' | ');
+        const telefonoFinal = telefono || 'Sin teléfono';
+        const correoFinal = email || correo || 'Sin correo';
+        const puestoFinal = puesto || mensaje || 'Sin puesto especificado';
         const cvArchivo = req.file ? req.file.filename : null;
 
         await db.query(
-            'INSERT INTO bolsa_trabajo (nombre_cliente, mensaje, archivo_cv, fecha) VALUES (?, ?, ?, NOW())',
-            [nombreFinal, mensajeCompleto, cvArchivo]
+            'INSERT INTO bolsa_trabajo (nombre_cliente, puesto, correo, telefono, archivo_cv, fecha) VALUES (?, ?, ?, ?, ?, NOW())',
+            [nombreFinal, puestoFinal, correoFinal, telefonoFinal, cvArchivo]
         );
 
         return res.json({ success: true, message: 'Solicitud enviada correctamente' });
@@ -295,8 +293,8 @@ const manejarBolsaTrabajo = async (req, res) => {
     }
 };
 
-app.post('/api/bolsa', upload.single('cv'), manejarBolsaTrabajo);
-app.post('/registro-bolsa', upload.single('cv'), manejarBolsaTrabajo);
+app.post(/\/registro-bolsa$/, upload.single('cv'), manejarBolsaTrabajo);
+app.post(/\/api\/bolsa$/, upload.single('cv'), manejarBolsaTrabajo);
 
 app.get('/api/ver-bolsa', async (req, res) => {
     try {
