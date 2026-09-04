@@ -270,7 +270,7 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
-// --- ENDPOINTS DE BOLSA DE TRABAJO (Soporte dual /api/bolsa y /registro-bolsa) ---
+// --- ENDPOINTS DE BOLSA DE TRABAJO (Con inclusión explícita de fecha y manejo de errores detallado) ---
 const manejarBolsaTrabajo = async (req, res) => {
     try {
         const { nombre, nombre_cliente, telefono, email, correo, mensaje, puesto } = req.body;
@@ -284,7 +284,7 @@ const manejarBolsaTrabajo = async (req, res) => {
         const cvArchivo = req.file ? req.file.filename : null;
 
         await db.query(
-            'INSERT INTO bolsa_trabajo (nombre_cliente, mensaje, archivo_cv) VALUES (?, ?, ?)',
+            'INSERT INTO bolsa_trabajo (nombre_cliente, mensaje, archivo_cv, fecha) VALUES (?, ?, ?, NOW())',
             [nombreFinal, mensajeCompleto, cvArchivo]
         );
 
