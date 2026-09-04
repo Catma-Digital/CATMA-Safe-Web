@@ -270,26 +270,27 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
-// --- ENDPOINTS DE BOLSA DE TRABAJO (Corregido para capturar nombres y archivos correctamente) ---
+// --- ENDPOINTS DE BOLSA DE TRABAJO (Estructura limpia, mapeo exacto de los campos del formulario modal) ---
 const manejarBolsaTrabajo = async (req, res) => {
     try {
-        const { nombre, nombre_cliente, nombres, telefono, email, correo, mensaje, puesto } = req.body;
+        // Capturamos los campos exactos que corresponden a los placeholders de la imagen del formulario
+        const nombreFinal = req.body.nombre_cliente || req.body.nombre || req.body.nombre_completo || req.body.name || 'Sin nombre';
+        const telefonoFinal = req.body.telefono || req.body.tel || req.body.phone || 'Sin teléfono';
+        const correoFinal = req.body.email || req.body.correo || req.body.mail || 'Sin correo';
+        const puestoFinal = req.body.puesto || req.body.puesto_de_interes || req.body.mensaje || 'Sin puesto especificado';
 
-        const nombreFinal = nombre_cliente || nombre || nombres || 'Sin nombre';
-        const telefonoFinal = telefono || 'Sin teléfono';
-        const correoFinal = email || correo || 'Sin correo';
-        const puestoFinal = puesto || mensaje || 'Sin puesto especificado';
-
-        // Manejo flexible del archivo subido (sea req.file o req.files)
+        // Extracción limpia del archivo PDF adjunto
         let cvArchivo = null;
         if (req.file) {
             cvArchivo = req.file.filename;
-        } else if (req.files && req.files.length > 0) {
-            cvArchivo = req.files[0].filename;
-        } else if (req.files && !Array.isArray(req.files)) {
-            const primerKey = Object.keys(req.files)[0];
-            if (primerKey && req.files[primerKey][0]) {
-                cvArchivo = req.files[primerKey][0].filename;
+        } else if (req.files) {
+            if (Array.isArray(req.files) && req.files.length > 0) {
+                cvArchivo = req.files[0].filename;
+            } else {
+                const primerKey = Object.keys(req.files)[0];
+                if (primerKey && req.files[primerKey][0]) {
+                    cvArchivo = req.files[primerKey][0].filename;
+                }
             }
         }
 
@@ -300,7 +301,7 @@ const manejarBolsaTrabajo = async (req, res) => {
 
         return res.json({ success: true, message: 'Solicitud enviada correctamente' });
     } catch (error) {
-        console.error("Error real en bolsa de trabajo:", error);
+        console.error("Error en bolsa de trabajo:", error);
         return res.status(500).json({ success: false, error: error.message });
     }
 };
