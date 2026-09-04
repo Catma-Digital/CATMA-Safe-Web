@@ -121,7 +121,7 @@ app.post('/api/usuarios/borrar', async (req, res) => {
     }
 });
 
-// --- APIs DE NEGOCIO CONECTADAS A LA COLUMNA REAL (nombre_cliente) ---
+// --- APIs DE NEGOCIO CONECTADAS A LAS COLUMNAS REALES ---
 
 app.post('/api/leads', async (req, res) => {
     try {
@@ -270,39 +270,29 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
+// --- ENDPOINT CORREGIDO PARA BOLSA DE TRABAJO (Mapeo a columnas reales) ---
 app.post('/api/bolsa', upload.single('cv'), async (req, res) => {
     try {
-        const { nombre, telefono, email, correo, mensaje, puesto, cv } = req.body;
-        const emailFinal = email || correo || null;
-        const mensajeFinal = mensaje || puesto || null;
-        const cvArchivo = req.file ? req.file.filename : (cv || null);
+        const { nombre, nombre_cliente, telefono, email, correo, mensaje, puesto } = req.body;
 
-        try {
-            await db.query(
-                'INSERT INTO bolsa_trabajo (nombre, telefono, email, mensaje, cv) VALUES (?, ?, ?, ?, ?)',
-                [nombre, telefono, emailFinal, mensajeFinal, cvArchivo]
-            );
-        } catch (err1) {
-            try {
-                await db.query(
-                    'INSERT INTO bolsa_trabajo (nombre, telefono, correo, puesto, cv) VALUES (?, ?, ?, ?, ?)',
-                    [nombre, telefono, emailFinal, mensajeFinal, cvArchivo]
-                );
-            } catch (err2) {
-                try {
-                    await db.query(
-                        'INSERT INTO bolsa_trabajo (nombre, telefono, cv) VALUES (?, ?, ?)',
-                        [nombre, telefono, cvArchivo]
-                    );
-                } catch (err3) {
-                    console.error("Error DB crítico en bolsa:", err3.message);
-                }
-            }
-        }
+        const nombreFinal = nombre_cliente || nombre || 'Sin nombre';
+        const telefonoStr = telefono ? `Tel: ${telefono}` : '';
+        const emailStr = email || correo ? `Email: ${email || correo}` : '';
+        const mensajeStr = mensaje || puesto || '';
+
+        const mensajeCompleto = [nombreFinal, telefonoStr, emailStr, mensajeStr].filter(Boolean).join(' | ');
+        const cvArchivo = req.file ? req.file.filename : null;
+
+        await db.query(
+            'INSERT INTO bolsa_trabajo (nombre_cliente, mensaje, archivo_cv) VALUES (?, ?, ?)',
+            [nombreFinal, mensajeCompleto, cvArchivo]
+        );
+
+        return res.json({ success: true, message: 'Solicitud enviada correctamente' });
     } catch (error) {
-        console.error("Error silenciado en /api/bolsa:", error.message);
+        console.error("Error real en /api/bolsa:", error);
+        return res.status(500).json({ success: false, error: error.message });
     }
-    return res.json({ success: true, message: 'Solicitud enviada correctamente' });
 });
 
 app.get('/api/ver-bolsa', async (req, res) => {
