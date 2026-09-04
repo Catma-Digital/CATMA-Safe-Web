@@ -270,16 +270,28 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
-// --- ENDPOINTS DE BOLSA DE TRABAJO (Con columnas independientes y rutas comodín) ---
+// --- ENDPOINTS DE BOLSA DE TRABAJO (Corregido para capturar nombres y archivos correctamente) ---
 const manejarBolsaTrabajo = async (req, res) => {
     try {
-        const { nombre, nombre_cliente, telefono, email, correo, mensaje, puesto } = req.body;
+        const { nombre, nombre_cliente, nombres, telefono, email, correo, mensaje, puesto } = req.body;
 
-        const nombreFinal = nombre_cliente || nombre || 'Sin nombre';
+        const nombreFinal = nombre_cliente || nombre || nombres || 'Sin nombre';
         const telefonoFinal = telefono || 'Sin teléfono';
         const correoFinal = email || correo || 'Sin correo';
         const puestoFinal = puesto || mensaje || 'Sin puesto especificado';
-        const cvArchivo = req.file ? req.file.filename : null;
+
+        // Manejo flexible del archivo subido (sea req.file o req.files)
+        let cvArchivo = null;
+        if (req.file) {
+            cvArchivo = req.file.filename;
+        } else if (req.files && req.files.length > 0) {
+            cvArchivo = req.files[0].filename;
+        } else if (req.files && !Array.isArray(req.files)) {
+            const primerKey = Object.keys(req.files)[0];
+            if (primerKey && req.files[primerKey][0]) {
+                cvArchivo = req.files[primerKey][0].filename;
+            }
+        }
 
         await db.query(
             'INSERT INTO bolsa_trabajo (nombre_cliente, puesto, correo, telefono, archivo_cv, fecha) VALUES (?, ?, ?, ?, ?, NOW())',
@@ -293,8 +305,8 @@ const manejarBolsaTrabajo = async (req, res) => {
     }
 };
 
-app.post(/\/registro-bolsa$/, upload.single('cv'), manejarBolsaTrabajo);
-app.post(/\/api\/bolsa$/, upload.single('cv'), manejarBolsaTrabajo);
+app.post(/\/registro-bolsa$/, upload.any(), manejarBolsaTrabajo);
+app.post(/\/api\/bolsa$/, upload.any(), manejarBolsaTrabajo);
 
 app.get('/api/ver-bolsa', async (req, res) => {
     try {
