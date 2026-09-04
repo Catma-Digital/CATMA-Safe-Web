@@ -270,16 +270,23 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
-// --- ENDPOINTS DE BOLSA DE TRABAJO (Solución definitiva y limpia) ---
+// --- ENDPOINTS DE BOLSA DE TRABAJO (Solución definitiva y blindada contra undefined) ---
 const manejarBolsaTrabajo = async (req, res) => {
     try {
-        // Captura exacta de los campos del formulario modal de la interfaz
-        const nombreFinal = req.body.nombre_cliente || req.body.nombre || req.body.nombre_completo || req.body.name || 'Sin nombre';
-        const telefonoFinal = req.body.telefono || req.body.tel || req.body.phone || 'Sin teléfono';
-        const correoFinal = req.body.email || req.body.correo || req.body.mail || 'Sin correo';
-        const puestoFinal = req.body.puesto || req.body.puesto_de_interes || req.body.mensaje || 'Sin puesto especificado';
+        const b = req.body || {};
 
-        // Extracción formal del archivo adjunto utilizando upload.any()
+        const rawNombre = b.candidato || b.nombre_cliente || b.nombre || b.nombre_completo || b.name || b.nombre_candidato;
+        const nombreFinal = (rawNombre && rawNombre !== 'undefined' && String(rawNombre).trim() !== '') ? rawNombre : 'Sin nombre';
+
+        const rawTel = b.telefono || b.tel || b.phone || b.telefono_candidato;
+        const telefonoFinal = (rawTel && rawTel !== 'undefined' && String(rawTel).trim() !== '') ? rawTel : 'Sin teléfono';
+
+        const rawCorreo = b.email || b.correo || b.mail || b.correo_electronico;
+        const correoFinal = (rawCorreo && rawCorreo !== 'undefined' && String(rawCorreo).trim() !== '') ? rawCorreo : 'Sin correo';
+
+        const rawPuesto = b.puesto || b.puesto_de_interes || b.mensaje || b.puestoDeseado;
+        const puestoFinal = (rawPuesto && rawPuesto !== 'undefined' && String(rawPuesto).trim() !== '') ? rawPuesto : 'Sin puesto especificado';
+
         let cvArchivo = null;
         if (req.file) {
             cvArchivo = req.file.filename;
@@ -288,7 +295,7 @@ const manejarBolsaTrabajo = async (req, res) => {
                 cvArchivo = req.files[0].filename;
             } else {
                 const primerKey = Object.keys(req.files)[0];
-                if (primerKey && req.files[primerKey][0]) {
+                if (primerKey && req.files[primerKey] && req.files[primerKey][0]) {
                     cvArchivo = req.files[primerKey][0].filename;
                 }
             }
