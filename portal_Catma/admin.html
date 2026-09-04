@@ -295,11 +295,11 @@
             document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `
                 <tr>
                     <td>${b.fecha || 'N/A'}</td>
-                    <td><strong>${b.nombre}</strong></td>
-                    <td>${b.puesto}</td>
-                    <td>${b.correo}</td>
-                    <td>${b.telefono}</td>
-                    <td>${b.cv_path ? `<a href="${API_BASE}/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td>
+                    <td><strong>${b.nombre_cliente || 'Sin nombre'}</strong></td>
+                    <td>${b.puesto || 'N/A'}</td>
+                    <td>${b.correo || 'N/A'}</td>
+                    <td>${b.telefono || 'N/A'}</td>
+                    <td>${b.archivo_cv ? `<a href="${API_BASE}/uploads/${b.archivo_cv}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td>
                     <td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td>
                 </tr>
             `).join('');
@@ -319,14 +319,12 @@
 
                 let textoDetalles = l.mensaje || '';
 
-                // Extraer el nombre de la empresa del mensaje (ej. "Empresa: Bimbo México | undefined")
                 let nombreEmpresa = "Empresa";
                 const matchEmpresa = textoDetalles.match(/Empresa:\s*([^|]+)/);
                 if (matchEmpresa && matchEmpresa[1]) {
                     nombreEmpresa = matchEmpresa[1].trim();
                 }
 
-                // Generar URL de texto plano según el origen o tipo de lead
                 let urlGenerada = "";
                 let textoEnlace = "";
 
@@ -341,13 +339,10 @@
                     textoEnlace = "Buscar en Google";
                 }
 
-                // Limpiar el texto "undefined" feo si viene del backend
                 textoDetalles = textoDetalles.replace(/\|\s*undefined/g, '');
 
-                // Construir la salida limpia: Texto plano de la liga + Hipervínculo para hacer clic
                 let contenidoFinal = `${textoDetalles} | <strong>${urlGenerada}</strong> | <a href="${urlGenerada}" target="_blank" class="text-primary fw-bold text-decoration-underline">${textoEnlace}</a>`;
 
-                // Mapeo flexible de etiquetas según el origen real
                 let claseOrigen = 'bg-secondary';
                 let nombreOrigen = l.id_origen || 'IA Apollo';
                 if (nombreOrigen === 'Apollo.io' || l.id_origen === 99 || textoDetalles.includes('Apollo')) { claseOrigen = 'bg-primary'; nombreOrigen = 'Apollo.io'; }
@@ -511,11 +506,11 @@
         document.getElementById('bolsa-body').innerHTML = bolsa.map(b => `
             <tr>
                 <td>${b.fecha || 'N/A'}</td>
-                <td><strong>${b.nombre}</strong></td>
-                <td>${b.puesto}</td>
-                <td>${b.correo}</td>
-                <td>${b.telefono}</td>
-                <td>${b.cv_path ? `<a href="${API_BASE}/uploads/${b.cv_path}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td>
+                <td><strong>${b.nombre_cliente || 'Sin nombre'}</strong></td>
+                <td>${b.puesto || 'N/A'}</td>
+                <td>${b.correo || 'N/A'}</td>
+                <td>${b.telefono || 'N/A'}</td>
+                <td>${b.archivo_cv ? `<a href="${API_BASE}/uploads/${b.archivo_cv}" target="_blank" class="btn btn-info btn-sm">Descargar</a>` : 'Sin archivo'}</td>
                 <td><button class="btn btn-danger btn-sm" onclick="borrarCandidato(${b.id})">Borrar</button></td>
             </tr>
         `).join('');
