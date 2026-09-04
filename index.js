@@ -270,16 +270,16 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
-// --- ENDPOINTS DE BOLSA DE TRABAJO (Estructura limpia, mapeo exacto de los campos del formulario modal) ---
+// --- ENDPOINTS DE BOLSA DE TRABAJO (Solución definitiva y limpia) ---
 const manejarBolsaTrabajo = async (req, res) => {
     try {
-        // Capturamos los campos exactos que corresponden a los placeholders de la imagen del formulario
+        // Captura exacta de los campos del formulario modal de la interfaz
         const nombreFinal = req.body.nombre_cliente || req.body.nombre || req.body.nombre_completo || req.body.name || 'Sin nombre';
         const telefonoFinal = req.body.telefono || req.body.tel || req.body.phone || 'Sin teléfono';
         const correoFinal = req.body.email || req.body.correo || req.body.mail || 'Sin correo';
         const puestoFinal = req.body.puesto || req.body.puesto_de_interes || req.body.mensaje || 'Sin puesto especificado';
 
-        // Extracción limpia del archivo PDF adjunto
+        // Extracción formal del archivo adjunto utilizando upload.any()
         let cvArchivo = null;
         if (req.file) {
             cvArchivo = req.file.filename;
