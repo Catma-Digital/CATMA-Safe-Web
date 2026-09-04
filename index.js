@@ -270,8 +270,8 @@ app.delete('/api/borrar-asesor/:id', async (req, res) => {
     }
 });
 
-// --- ENDPOINT CORREGIDO PARA BOLSA DE TRABAJO (Mapeo a columnas reales) ---
-app.post('/api/bolsa', upload.single('cv'), async (req, res) => {
+// --- ENDPOINTS DE BOLSA DE TRABAJO (Soporte dual /api/bolsa y /registro-bolsa) ---
+const manejarBolsaTrabajo = async (req, res) => {
     try {
         const { nombre, nombre_cliente, telefono, email, correo, mensaje, puesto } = req.body;
 
@@ -290,10 +290,13 @@ app.post('/api/bolsa', upload.single('cv'), async (req, res) => {
 
         return res.json({ success: true, message: 'Solicitud enviada correctamente' });
     } catch (error) {
-        console.error("Error real en /api/bolsa:", error);
+        console.error("Error real en bolsa de trabajo:", error);
         return res.status(500).json({ success: false, error: error.message });
     }
-});
+};
+
+app.post('/api/bolsa', upload.single('cv'), manejarBolsaTrabajo);
+app.post('/registro-bolsa', upload.single('cv'), manejarBolsaTrabajo);
 
 app.get('/api/ver-bolsa', async (req, res) => {
     try {
